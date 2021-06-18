@@ -70,20 +70,20 @@ func main() {
 
 	// dependencies injection
 	// persistence
-	taskPersistence := persistence.NewTask()
+	userPersistence := persistence.NewUser()
 
 	// use case
-	taskUseCase := usecase.NewTask(taskPersistence)
+	userUseCase := usecase.NewUser(userPersistence)
 
 	// handler
-	taskHandler := handler.NewTask(taskUseCase)
+	userHandler := handler.NewUser(userUseCase)
 
 	// define routes
 	{
-		task := r.Group("task")
-		task.POST("", taskHandler.Create)
-		task.GET("", taskHandler.GetAll)
-		task.PUT(":id", taskHandler.Update)
+		user := r.Group("user")
+		user.POST("", userHandler.Create)
+		user.GET("", userHandler.GetAll)
+		user.PUT(":id", userHandler.Update)
 	}
 
 	var port = ":8080"
