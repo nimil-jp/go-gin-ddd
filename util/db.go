@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"go-ddd/config"
+	"go-ddd/domain/model"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
@@ -33,4 +34,10 @@ func init() {
 		panic(err)
 	}
 
+	err = DB.AutoMigrate(
+		&model.User{},
+	)
+	if err != nil {
+		panic(err)
+	}
 }

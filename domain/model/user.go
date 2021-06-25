@@ -6,6 +6,6 @@ import (
 
 type User struct {
 	domain.SoftDeleteModel
-	UserID   string `json:"user_id"`
-	Password bool   `json:"password"`
+	Email    string `json:"email"`
+	Password string `json:"password"`
 }

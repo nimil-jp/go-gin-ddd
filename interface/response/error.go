@@ -8,29 +8,36 @@ import (
 	"errors"
 
 	"github.com/gin-gonic/gin"
+	"go-ddd/util/validate"
 	"gorm.io/gorm"
 )
 
-type Error struct {
+type ExpectedError struct {
 	statusCode int
 	msg        string
 }
 
-func NewError(statusCode int, err error) Error {
+func NewExpectedError(statusCode int, message string) ExpectedError {
 	if statusCode == 0 {
 		statusCode = http.StatusInternalServerError
 	}
-	return Error{statusCode: statusCode, msg: err.Error()}
+	return ExpectedError{statusCode: statusCode, msg: message}
 }
 
-func (e Error) Error() string {
+func (e ExpectedError) Error() string {
 	return fmt.Sprintf("code=%d, msg=%s", e.statusCode, e.msg)
 }
 
 func ErrorJSON(c *gin.Context, err error) {
-	var handleError Error
-	if errors.As(err, &handleError) {
-		c.JSON(handleError.statusCode, handleError.msg)
+	var (
+		eerr ExpectedError
+		verr validate.ValidationError
+	)
+
+	if errors.As(err, &eerr) {
+		c.JSON(eerr.statusCode, eerr.msg)
+	} else if errors.As(err, &verr) {
+		c.JSON(http.StatusBadRequest, verr)
 	} else {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			c.JSON(http.StatusNotFound, errors.New("record not found"))

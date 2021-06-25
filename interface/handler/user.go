@@ -1,34 +1,76 @@
 package handler
 
 import (
+	"net/http"
+
 	"github.com/gin-gonic/gin"
+	"go-ddd/interface/request"
+	"go-ddd/interface/response"
 	"go-ddd/usecase"
+	"go-ddd/util/validate"
 )
 
-type IUser interface {
-	Create(c *gin.Context)
-	GetAll(c *gin.Context)
-	Update(c *gin.Context)
-}
-
-type user struct {
+type User struct {
 	userUseCase usecase.IUser
 }
 
-func NewUser(tu usecase.IUser) IUser {
-	return &user{
-		userUseCase: tu,
+func NewUser(uuc usecase.IUser) User {
+	return User{
+		userUseCase: uuc,
 	}
 }
 
-func (t user) Create(c *gin.Context) {
-	panic("implement me")
+func (u User) Create(c *gin.Context) {
+	var req request.UserCreate
+
+	if !validate.Bind(c, &req) {
+		return
+	}
+
+	id, err := u.userUseCase.Create(&req)
+
+	if err != nil {
+		response.ErrorJSON(c, err)
+		return
+	}
+
+	c.JSON(http.StatusCreated, id)
 }
 
-func (t user) GetAll(c *gin.Context) {
-	panic("implement me")
+func (u User) Login(c *gin.Context) {
+	var req request.UserLogin
+
+	if !validate.Bind(c, &req) {
+		return
+	}
+
+	res, err := u.userUseCase.Login(&req)
+
+	if err != nil {
+		response.ErrorJSON(c, err)
+		return
+	}
+
+	if res == nil {
+		c.Status(http.StatusUnauthorized)
+		return
+	}
+
+	c.JSON(http.StatusOK, res)
 }
 
-func (t user) Update(c *gin.Context) {
-	panic("implement me")
+func (u User) RefreshToken(c *gin.Context) {
+	res, err := u.userUseCase.RefreshToken(c.Query("refresh_token"))
+
+	if err != nil {
+		response.ErrorJSON(c, err)
+		return
+	}
+
+	if res == nil {
+		c.Status(http.StatusUnauthorized)
+		return
+	}
+
+	c.JSON(http.StatusOK, res)
 }

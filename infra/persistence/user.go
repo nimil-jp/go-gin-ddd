@@ -3,7 +3,6 @@ package persistence
 import (
 	"go-ddd/domain/model"
 	"go-ddd/domain/repository"
-	"go-ddd/interface/request"
 	"gorm.io/gorm"
 )
 
@@ -13,14 +12,24 @@ func NewUser() repository.IUser {
 	return &user{}
 }
 
-func (t user) Create(db *gorm.DB, task *model.User) (uint, error) {
-	panic("implement me")
+func (u user) Create(db *gorm.DB, user *model.User) (uint, error) {
+	if err := db.Create(user).Error; err != nil {
+		return 0, err
+	}
+	return user.ID, nil
 }
 
-func (t user) GetAll(db *gorm.DB, paging *request.Paging) ([]*model.User, uint, error) {
-	panic("implement me")
+func (u user) EmailExists(db *gorm.DB, email string) bool {
+	var count int64
+	db.Model(&model.User{}).Where(&model.User{Email: email}).Count(&count)
+	return count > 0
 }
 
-func (t user) Update(db *gorm.DB, task *model.User) error {
-	panic("implement me")
+func (u user) GetByEmail(db *gorm.DB, email string) (*model.User, error) {
+	var dest model.User
+	err := db.Where(&model.User{Email: email}).First(&dest).Error
+	if err != nil {
+		return nil, err
+	}
+	return &dest, nil
 }

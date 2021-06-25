@@ -10,16 +10,28 @@ import (
 	"time"
 
 	"github.com/gin-contrib/cors"
-	"github.com/gin-contrib/sessions"
-	"github.com/gin-contrib/sessions/cookie"
 	"github.com/gin-gonic/gin"
+	"github.com/ken109/gin-jwt"
 	"go-ddd/config"
+	"go-ddd/constant"
 	"go-ddd/infra/persistence"
 	"go-ddd/interface/handler"
 	"go-ddd/usecase"
 )
 
 func main() {
+	err := jwt.SetUp(
+		jwt.Option{
+			Realm:            constant.DefaultRealm,
+			SigningAlgorithm: jwt.HS256,
+			SecretKey:        []byte(config.Env.App.Secret),
+			Timeout:          time.Second * 30,
+		},
+	)
+	if err != nil {
+		panic(err)
+	}
+
 	r := gin.New()
 
 	r.GET("health", func(c *gin.Context) { c.Status(http.StatusOK) })
@@ -39,35 +51,6 @@ func main() {
 		),
 	)
 
-	// cookie
-	var (
-		cookieSecure   bool
-		cookieSameSite http.SameSite
-	)
-
-	switch gin.Mode() {
-	case gin.ReleaseMode:
-		cookieSecure = true
-		cookieSameSite = http.SameSiteNoneMode
-		break
-	case gin.DebugMode:
-		cookieSecure = false
-		cookieSameSite = http.SameSiteLaxMode
-		break
-	}
-
-	store := cookie.NewStore([]byte(config.Env.App.Secret))
-	store.Options(
-		sessions.Options{
-			Path:     "/",
-			MaxAge:   60 * 60 * 2,
-			Secure:   cookieSecure,
-			HttpOnly: true,
-			SameSite: cookieSameSite,
-		},
-	)
-	r.Use(sessions.Sessions(gin.AuthUserKey, store))
-
 	// dependencies injection
 	// persistence
 	userPersistence := persistence.NewUser()
@@ -82,10 +65,17 @@ func main() {
 	{
 		user := r.Group("user")
 		user.POST("", userHandler.Create)
-		user.GET("", userHandler.GetAll)
-		user.PUT(":id", userHandler.Update)
+		user.POST("login", userHandler.Login)
+		user.GET("refresh-token", userHandler.RefreshToken)
+
+		userA := user.Group("")
+		userA.Use(jwt.Verify(constant.DefaultRealm))
+		userA.GET("auth", func(c *gin.Context) {
+			c.Status(200)
+		})
 	}
 
+	// serve
 	var port = ":8080"
 	if portEnv := os.Getenv("PORT"); portEnv != "" {
 		port = portEnv
@@ -97,7 +87,6 @@ func main() {
 	}
 
 	go func() {
-		// serve
 		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			panic(err)
 		}
