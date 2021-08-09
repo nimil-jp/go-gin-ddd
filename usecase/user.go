@@ -5,8 +5,8 @@ import (
 	"go-ddd/constant"
 	"go-ddd/domain/model"
 	"go-ddd/domain/repository"
-	"go-ddd/interface/request"
-	"go-ddd/interface/response"
+	"go-ddd/resource/request"
+	"go-ddd/resource/response"
 	"go-ddd/util"
 	"go-ddd/util/validate"
 )
@@ -40,7 +40,7 @@ func (u user) Create(req *request.UserCreate) (uint, error) {
 		return 0, verr
 	}
 
-	hashed, err := util.GenHashedPassword(req.Password)
+	hashed, err := genHashedPassword(req.Password)
 	if err != nil {
 		return 0, err
 	}
@@ -64,7 +64,7 @@ func (u user) Login(req *request.UserLogin) (*response.UserLogin, error) {
 		return nil, err
 	}
 
-	if util.CheckPassword(user.Password, req.Password) {
+	if checkPassword(user.Password, req.Password) {
 		var res response.UserLogin
 		res.Token, res.RefreshToken, err = jwt.IssueToken(constant.DefaultRealm, jwt.Claims{})
 		if err != nil {

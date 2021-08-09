@@ -1,4 +1,4 @@
-package response
+package util
 
 import (
 	"fmt"
@@ -9,7 +9,6 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"go-ddd/util/validate"
-	"gorm.io/gorm"
 )
 
 type ExpectedError struct {
@@ -39,14 +38,10 @@ func ErrorJSON(c *gin.Context, err error) {
 	} else if errors.As(err, &verr) {
 		c.JSON(http.StatusBadRequest, verr)
 	} else {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			c.JSON(http.StatusNotFound, errors.New("record not found"))
+		if gin.Mode() == gin.DebugMode {
+			c.JSON(http.StatusInternalServerError, err)
 		} else {
-			if gin.Mode() == gin.DebugMode {
-				c.JSON(http.StatusInternalServerError, err)
-			} else {
-				c.Status(http.StatusInternalServerError)
-			}
+			c.Status(http.StatusInternalServerError)
 		}
 	}
 	log.Printf("%+v\n", err)

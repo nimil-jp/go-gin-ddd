@@ -4,10 +4,9 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"go-ddd/interface/request"
-	"go-ddd/interface/response"
+	"go-ddd/resource/request"
 	"go-ddd/usecase"
-	"go-ddd/util/validate"
+	"go-ddd/util"
 )
 
 type User struct {
@@ -23,14 +22,14 @@ func NewUser(uuc usecase.IUser) User {
 func (u User) Create(c *gin.Context) {
 	var req request.UserCreate
 
-	if !validate.Bind(c, &req) {
+	if !bind(c, &req) {
 		return
 	}
 
 	id, err := u.userUseCase.Create(&req)
 
 	if err != nil {
-		response.ErrorJSON(c, err)
+		util.ErrorJSON(c, err)
 		return
 	}
 
@@ -40,14 +39,14 @@ func (u User) Create(c *gin.Context) {
 func (u User) Login(c *gin.Context) {
 	var req request.UserLogin
 
-	if !validate.Bind(c, &req) {
+	if !bind(c, &req) {
 		return
 	}
 
 	res, err := u.userUseCase.Login(&req)
 
 	if err != nil {
-		response.ErrorJSON(c, err)
+		util.ErrorJSON(c, err)
 		return
 	}
 
@@ -63,7 +62,7 @@ func (u User) RefreshToken(c *gin.Context) {
 	res, err := u.userUseCase.RefreshToken(c.Query("refresh_token"))
 
 	if err != nil {
-		response.ErrorJSON(c, err)
+		util.ErrorJSON(c, err)
 		return
 	}
 

@@ -3,12 +3,10 @@ package validate
 import (
 	"encoding/json"
 	"log"
-	"net/http"
 	"reflect"
 	"regexp"
 	"strings"
 
-	"github.com/gin-gonic/gin"
 	"github.com/go-playground/locales/ja"
 	ut "github.com/go-playground/universal-translator"
 	"github.com/go-playground/validator/v10"
@@ -71,15 +69,6 @@ func (verr *ValidationError) Add(key string, value string) {
 func (verr ValidationError) Error() string {
 	b, _ := json.Marshal(verr)
 	return string(b)
-}
-
-func Bind(c *gin.Context, request interface{}) bool {
-	if err := c.BindJSON(request); err != nil {
-		c.Status(http.StatusInternalServerError)
-		return false
-	} else {
-		return true
-	}
 }
 
 func (verr ValidationError) Validate(request interface{}) bool {
