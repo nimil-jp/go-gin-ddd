@@ -88,7 +88,7 @@ func hf(handlerFunc handlerFunc) gin.HandlerFunc {
 				c.JSON(http.StatusBadRequest, verr)
 			} else {
 				if gin.Mode() == gin.DebugMode {
-					c.JSON(http.StatusInternalServerError, err)
+					c.String(http.StatusInternalServerError, "%+v", err)
 				} else {
 					c.Status(http.StatusInternalServerError)
 				}
