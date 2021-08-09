@@ -8,7 +8,7 @@ import (
 
 func bind(c *gin.Context, request interface{}) (ok bool) {
 	if err := c.BindJSON(request); err != nil {
-		c.Status(http.StatusInternalServerError)
+		c.Status(http.StatusBadRequest)
 		return false
 	} else {
 		return true

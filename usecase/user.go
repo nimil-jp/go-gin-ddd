@@ -4,12 +4,12 @@ import (
 	jwt "github.com/ken109/gin-jwt"
 	"github.com/pkg/errors"
 	"go-ddd/constant"
-	"go-ddd/domain/model"
+	"go-ddd/domain/entity"
 	"go-ddd/domain/repository"
 	"go-ddd/resource/request"
 	"go-ddd/resource/response"
 	"go-ddd/util"
-	"go-ddd/util/validate"
+	"go-ddd/util/xerrors"
 )
 
 type IUser interface {
@@ -29,7 +29,7 @@ func NewUser(tr repository.IUser) IUser {
 }
 
 func (u user) Create(req *request.UserCreate) (uint, error) {
-	verr := validate.NewValidationError()
+	verr := xerrors.NewValidation()
 
 	email, err := u.userRepo.EmailExists(util.DB, req.Email)
 	if err != nil {
@@ -37,24 +37,19 @@ func (u user) Create(req *request.UserCreate) (uint, error) {
 	}
 
 	if email {
-		verr.Add("email", "既に使われています")
+		verr.Add("Email", "既に使用されています")
 	}
 
-	if !verr.Validate(req) {
-		return 0, verr
-	}
-
-	hashed, err := genHashedPassword(req.Password)
+	newUser, err := entity.NewUser(verr, req)
 	if err != nil {
 		return 0, err
 	}
 
-	id, err := u.userRepo.Create(
-		util.DB, &model.User{
-			Email:    req.Email,
-			Password: hashed,
-		},
-	)
+	if verr.InValid() {
+		return 0, verr
+	}
+
+	id, err := u.userRepo.Create(util.DB, newUser)
 	if err != nil {
 		return 0, err
 	}
@@ -68,8 +63,9 @@ func (u user) Login(req *request.UserLogin) (*response.UserLogin, error) {
 		return nil, err
 	}
 
-	if checkPassword(user.Password, req.Password) {
+	if user.ValidPassword(req.Password) {
 		var res response.UserLogin
+
 		res.Token, res.RefreshToken, err = jwt.IssueToken(constant.DefaultRealm, jwt.Claims{})
 		if err != nil {
 			return nil, errors.WithStack(err)

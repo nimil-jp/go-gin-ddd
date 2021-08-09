@@ -14,9 +14,6 @@ import (
 	"github.com/ken109/gin-jwt"
 	"go-ddd/config"
 	"go-ddd/constant"
-	"go-ddd/infra/persistence"
-	"go-ddd/interface/handler"
-	"go-ddd/usecase"
 )
 
 func main() {
@@ -32,12 +29,12 @@ func main() {
 		panic(err)
 	}
 
-	r := gin.New()
+	engine := gin.New()
 
-	r.GET("health", func(c *gin.Context) { c.Status(http.StatusOK) })
+	engine.GET("health", func(c *gin.Context) { c.Status(http.StatusOK) })
 
 	// cors
-	r.Use(
+	engine.Use(
 		cors.New(
 			cors.Config{
 				AllowOriginFunc: func(origin string) bool {
@@ -51,29 +48,7 @@ func main() {
 		),
 	)
 
-	// dependencies injection
-	// persistence
-	userPersistence := persistence.NewUser()
-
-	// use case
-	userUseCase := usecase.NewUser(userPersistence)
-
-	// handler
-	userHandler := handler.NewUser(userUseCase)
-
-	// define routes
-	{
-		user := r.Group("user")
-		user.POST("", userHandler.Create)
-		user.POST("login", userHandler.Login)
-		user.GET("refresh-token", userHandler.RefreshToken)
-
-		userA := user.Group("")
-		userA.Use(jwt.Verify(constant.DefaultRealm))
-		userA.GET("auth", func(c *gin.Context) {
-			c.Status(200)
-		})
-	}
+	registerRoute(engine)
 
 	// serve
 	var port = ":8080"
@@ -83,7 +58,7 @@ func main() {
 
 	srv := &http.Server{
 		Addr:    port,
-		Handler: r,
+		Handler: engine,
 	}
 
 	go func() {

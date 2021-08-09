@@ -6,7 +6,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"go-ddd/resource/request"
 	"go-ddd/usecase"
-	"go-ddd/util"
 )
 
 type User struct {
@@ -19,57 +18,54 @@ func NewUser(uuc usecase.IUser) User {
 	}
 }
 
-func (u User) Create(c *gin.Context) {
+func (u User) Create(c *gin.Context) error {
 	var req request.UserCreate
 
 	if !bind(c, &req) {
-		return
+		return nil
 	}
 
 	id, err := u.userUseCase.Create(&req)
-
 	if err != nil {
-		util.ErrorJSON(c, err)
-		return
+		return err
 	}
 
 	c.JSON(http.StatusCreated, id)
+	return nil
 }
 
-func (u User) Login(c *gin.Context) {
+func (u User) Login(c *gin.Context) error {
 	var req request.UserLogin
 
 	if !bind(c, &req) {
-		return
+		return nil
 	}
 
 	res, err := u.userUseCase.Login(&req)
-
 	if err != nil {
-		util.ErrorJSON(c, err)
-		return
+		return err
 	}
 
 	if res == nil {
 		c.Status(http.StatusUnauthorized)
-		return
+		return nil
 	}
 
 	c.JSON(http.StatusOK, res)
+	return nil
 }
 
-func (u User) RefreshToken(c *gin.Context) {
+func (u User) RefreshToken(c *gin.Context) error {
 	res, err := u.userUseCase.RefreshToken(c.Query("refresh_token"))
-
 	if err != nil {
-		util.ErrorJSON(c, err)
-		return
+		return err
 	}
 
 	if res == nil {
 		c.Status(http.StatusUnauthorized)
-		return
+		return nil
 	}
 
 	c.JSON(http.StatusOK, res)
+	return nil
 }
