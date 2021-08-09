@@ -7,6 +7,6 @@ import (
 
 type IUser interface {
 	Create(db *gorm.DB, user *model.User) (uint, error)
-	EmailExists(db *gorm.DB, email string) bool
+	EmailExists(db *gorm.DB, email string) (bool, error)
 	GetByEmail(db *gorm.DB, email string) (*model.User, error)
 }

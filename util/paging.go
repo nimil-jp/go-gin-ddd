@@ -28,7 +28,7 @@ func NewPaging(c *gin.Context) *Paging {
 	return paging
 }
 
-func (p *Paging) GetCount(query *gorm.DB, model interface{}) (*gorm.DB, uint, error) {
+func (p *Paging) GetCount(query *gorm.DB, model interface{}) (uint, error) {
 	var count int64
 
 	copiedQuery := &gorm.DB{
@@ -39,10 +39,10 @@ func (p *Paging) GetCount(query *gorm.DB, model interface{}) (*gorm.DB, uint, er
 	}
 
 	if err := copiedQuery.Model(model).Count(&count).Error; err != nil {
-		return nil, 0, err
+		return 0, err
 	}
 
-	return query, uint(count), nil
+	return uint(count), nil
 }
 
 func (p *Paging) Query() func(*gorm.DB) *gorm.DB {
