@@ -25,7 +25,6 @@ func main() {
 			Realm:            constant.DefaultRealm,
 			SigningAlgorithm: jwt.HS256,
 			SecretKey:        []byte(config.Env.App.Secret),
-			Timeout:          time.Second * 30,
 		},
 	)
 	if err != nil {
