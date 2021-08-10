@@ -29,6 +29,6 @@ func NewUser(verr *xerrors.Validation, dto *request.UserCreate) (*User, error) {
 	}, nil
 }
 
-func (u User) ValidPassword(password string) bool {
-	return validPassword(u.Password, password)
+func (u User) PasswordIsValid(password string) bool {
+	return passwordIsValid(u.Password, password)
 }

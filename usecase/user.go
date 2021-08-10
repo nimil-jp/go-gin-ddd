@@ -63,7 +63,7 @@ func (u user) Login(req *request.UserLogin) (*response.UserLogin, error) {
 		return nil, err
 	}
 
-	if user.ValidPassword(req.Password) {
+	if user.PasswordIsValid(req.Password) {
 		var res response.UserLogin
 
 		res.Token, res.RefreshToken, err = jwt.IssueToken(constant.DefaultRealm, jwt.Claims{})
