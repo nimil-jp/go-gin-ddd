@@ -25,10 +25,12 @@ func (e Expected) Message() string {
 	return e.msg
 }
 
-func (e *Expected) ChangeStatus(before int, after int) {
+func (e *Expected) ChangeStatus(before int, after int) bool {
 	if e.statusCode == before {
 		e.statusCode = after
+		return true
 	}
+	return false
 }
 
 func (e Expected) StatusOk() bool {
@@ -37,4 +39,10 @@ func (e Expected) StatusOk() bool {
 
 func (e Expected) Error() string {
 	return fmt.Sprintf("code=%d, msg=%s", e.statusCode, e.msg)
+}
+
+// expected errors
+
+func NotFound() *Expected {
+	return NewExpected(http.StatusNotFound, "not found")
 }

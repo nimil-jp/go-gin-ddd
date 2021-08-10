@@ -34,6 +34,38 @@ func (u User) Create(c *gin.Context) error {
 	return nil
 }
 
+func (u User) ResetPasswordRequest(c *gin.Context) error {
+	var req request.UserResetPasswordRequest
+
+	if !bind(c, &req) {
+		return nil
+	}
+
+	res, err := u.userUseCase.ResetPasswordRequest(&req)
+	if err != nil {
+		return err
+	}
+
+	c.JSON(http.StatusOK, res)
+	return nil
+}
+
+func (u User) ResetPassword(c *gin.Context) error {
+	var req request.UserResetPassword
+
+	if !bind(c, &req) {
+		return nil
+	}
+
+	err := u.userUseCase.ResetPassword(&req)
+	if err != nil {
+		return err
+	}
+
+	c.Status(http.StatusOK)
+	return nil
+}
+
 func (u User) Login(c *gin.Context) error {
 	var req request.UserLogin
 

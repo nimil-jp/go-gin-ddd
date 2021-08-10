@@ -49,9 +49,9 @@ func (verr *Validation) Validate(request interface{}) (ok bool) {
 			}
 		}
 	}
-	return verr.InValid()
+	return verr.IsInValid()
 }
 
-func (verr Validation) InValid() bool {
+func (verr Validation) IsInValid() bool {
 	return len(verr.errors) > 0
 }

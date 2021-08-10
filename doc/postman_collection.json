@@ -1,0 +1,251 @@
+{
+	"info": {
+		"_postman_id": "7b0f513e-128e-4118-b999-334927853f01",
+		"name": "Go DDD",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "User",
+			"item": [
+				{
+					"name": "Create",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"a@a.a\",\n    \"password\": \"12345678\",\n    \"password_confirm\": \"12345678\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base}}/user",
+							"host": [
+								"{{base}}"
+							],
+							"path": [
+								"user"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var res = pm.response.json()",
+									"",
+									"pm.collectionVariables.set(\"token\", res[\"token\"])",
+									"pm.collectionVariables.set(\"refresh_token\", res[\"refresh_token\"])",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"{{email}}\",\n    \"password\": \"password\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base}}/user/login",
+							"host": [
+								"{{base}}"
+							],
+							"path": [
+								"user",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "RefreshToken",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var res = pm.response.json()",
+									"",
+									"pm.collectionVariables.set(\"token\", res[\"token\"])",
+									"pm.collectionVariables.set(\"refresh_token\", res[\"refresh_token\"])",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base}}/user/refresh-token?refresh_token={{refresh_token}}",
+							"host": [
+								"{{base}}"
+							],
+							"path": [
+								"user",
+								"refresh-token"
+							],
+							"query": [
+								{
+									"key": "refresh_token",
+									"value": "{{refresh_token}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ResetPasswordRequest",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"{{email}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base}}/user/reset-password-request",
+							"host": [
+								"{{base}}"
+							],
+							"path": [
+								"user",
+								"reset-password-request"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ResetPassword",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"recovery_token\": \"b2dfbe054bf370f4b93ec6864aad42bf8ca4ff86bb36aa76aec6a760ab4bbd328328cca77b3dd411bc\",\n    \"password\": \"password\",\n    \"password_confirm\": \"password\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base}}/user/reset-password",
+							"host": [
+								"{{base}}"
+							],
+							"path": [
+								"user",
+								"reset-password"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Health",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base}}/health",
+					"host": [
+						"{{base}}"
+					],
+					"path": [
+						"health"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{token}}",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					"let url = pm.collectionVariables.get(\"base\")",
+					"let refresh_token = pm.collectionVariables.get(\"refresh_token\")",
+					"",
+					"if (url !== \"\" && refresh_token !== \"\") {",
+					"    pm.sendRequest(",
+					"        `${url}/user/refresh-token?refresh_token=${refresh_token}`, ",
+					"        (err, res) => {",
+					"            pm.collectionVariables.set(\"token\", res.json()[\"token\"])",
+					"            pm.collectionVariables.set(\"refresh_token\", res.json()[\"refresh_token\"])",
+					"        }",
+					"    );",
+					"}"
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "base",
+			"value": "http://localhost:8080"
+		},
+		{
+			"key": "token",
+			"value": ""
+		},
+		{
+			"key": "refresh_token",
+			"value": ""
+		},
+		{
+			"key": "email",
+			"value": ""
+		}
+	]
+}

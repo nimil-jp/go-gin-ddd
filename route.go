@@ -30,6 +30,8 @@ func registerRoute(engine *gin.Engine) {
 		post(user, "", userHandler.Create)
 		post(user, "login", userHandler.Login)
 		get(user, "refresh-token", userHandler.RefreshToken)
+		patch(user, "reset-password-request", userHandler.ResetPasswordRequest)
+		patch(user, "reset-password", userHandler.ResetPassword)
 
 		userA := user.Group("")
 		userA.Use(jwt.Verify(constant.DefaultRealm))

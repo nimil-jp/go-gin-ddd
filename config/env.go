@@ -1,7 +1,7 @@
 package config
 
 import (
-	"fmt"
+	"encoding/json"
 	"os"
 
 	"github.com/joho/godotenv"
@@ -35,17 +35,42 @@ type EnvType struct {
 	}
 }
 
+func fileExists(path string) bool {
+	if f, err := os.Stat(path); os.IsNotExist(err) || f.IsDir() {
+		return false
+	} else {
+		return true
+	}
+}
+
 func init() {
-	dotenvPath := fmt.Sprintf("./%s.env", os.Getenv("GO_ENV"))
+	dotenvPath := "./.env"
 	if dotenvPathEnv := os.Getenv("DOTENV_PATH"); dotenvPathEnv != "" {
 		dotenvPath = dotenvPathEnv
 	}
-	err := godotenv.Load(dotenvPath)
-	if err != nil {
-		panic(err)
+	if fileExists(dotenvPath) {
+		err := godotenv.Load(dotenvPath)
+		if err != nil {
+			panic(err)
+		}
 	}
 
-	err = envconfig.Process("", &Env)
+	if env := os.Getenv("AWS_SECRET_ENV"); env != "" {
+		var jsonEnv map[string]string
+		err := json.Unmarshal([]byte(env), &jsonEnv)
+		if err != nil {
+			panic(err)
+		}
+
+		for k, v := range jsonEnv {
+			err = os.Setenv(k, v)
+			if err != nil {
+				panic(err)
+			}
+		}
+	}
+
+	err := envconfig.Process("", &Env)
 	if err != nil {
 		panic(err)
 	}
