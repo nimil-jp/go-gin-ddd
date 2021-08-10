@@ -10,11 +10,11 @@ type Expected struct {
 	msg        string
 }
 
-func NewExpected(statusCode int, message string) Expected {
+func NewExpected(statusCode int, message string) *Expected {
 	if statusCode == 0 {
 		statusCode = http.StatusInternalServerError
 	}
-	return Expected{statusCode: statusCode, msg: message}
+	return &Expected{statusCode: statusCode, msg: message}
 }
 
 func (e Expected) StatusCode() int {
@@ -23,6 +23,16 @@ func (e Expected) StatusCode() int {
 
 func (e Expected) Message() string {
 	return e.msg
+}
+
+func (e *Expected) ChangeStatus(before int, after int) {
+	if e.statusCode == before {
+		e.statusCode = after
+	}
+}
+
+func (e Expected) StatusOk() bool {
+	return e.statusCode < 300
 }
 
 func (e Expected) Error() string {

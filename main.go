@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"log"
 	"net/http"
 	"os"
 	"os/signal"
@@ -14,9 +13,13 @@ import (
 	"github.com/ken109/gin-jwt"
 	"go-ddd/config"
 	"go-ddd/constant"
+	"go-ddd/infrastructure/log"
+	"go-ddd/interface/middleware"
 )
 
 func main() {
+	logger := log.Logger()
+
 	err := jwt.SetUp(
 		jwt.Option{
 			Realm:            constant.DefaultRealm,
@@ -28,8 +31,12 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+	logger.Info("Succeeded in setting up JWT.")
 
 	engine := gin.New()
+
+	engine.Use(middleware.Log(logger, time.RFC3339, false))
+	engine.Use(middleware.RecoveryWithLog(logger, true))
 
 	engine.GET("health", func(c *gin.Context) { c.Status(http.StatusOK) })
 
@@ -50,6 +57,8 @@ func main() {
 
 	registerRoute(engine)
 
+	logger.Info("Succeeded in setting up routes.")
+
 	// serve
 	var port = ":8080"
 	if portEnv := os.Getenv("PORT"); portEnv != "" {
@@ -67,17 +76,19 @@ func main() {
 		}
 	}()
 
+	logger.Info("Succeeded in listen and serve.")
+
 	// graceful shutdown
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 	<-quit
-	log.Println("Shutting down server...")
+	logger.Info("Shutting down server...")
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	if err := srv.Shutdown(ctx); err != nil {
-		log.Fatal("Server forced to shutdown:", err)
+		logger.Fatalf("Server forced to shutdown: %+v", err)
 	}
 
-	log.Println("Server exiting")
+	logger.Info("Server exiting")
 }

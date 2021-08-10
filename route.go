@@ -1,7 +1,6 @@
 package main
 
 import (
-	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -77,24 +76,24 @@ func hf(handlerFunc handlerFunc) gin.HandlerFunc {
 		err := handlerFunc(c)
 
 		if err != nil {
-			var (
-				eerr xerrors.Expected
-				verr xerrors.Validation
-			)
-
-			if errors.As(err, &eerr) {
-				c.JSON(eerr.StatusCode(), eerr.Message())
-			} else if errors.As(err, &verr) {
-				c.JSON(http.StatusBadRequest, verr)
-			} else {
+			switch v := err.(type) {
+			case *xerrors.Expected:
+				if v.StatusOk() {
+					return
+				} else {
+					c.JSON(v.StatusCode(), v.Message())
+				}
+			case *xerrors.Validation:
+				c.JSON(http.StatusBadRequest, v)
+			default:
 				if gin.Mode() == gin.DebugMode {
-					c.String(http.StatusInternalServerError, "%+v", err)
+					c.String(http.StatusInternalServerError, "%+v", v)
 				} else {
 					c.Status(http.StatusInternalServerError)
 				}
 			}
-			log.Printf("%+v\n", err)
-			return
+
+			_ = c.Error(errors.Errorf("%+v", err))
 		}
 	}
 }
