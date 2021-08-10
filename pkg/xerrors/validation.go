@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 
 	"github.com/go-playground/validator/v10"
+	"go-ddd/pkg/validation"
 	"go-ddd/util"
-	"go-ddd/util/validation"
 )
 
 type Validation struct {

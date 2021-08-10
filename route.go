@@ -9,8 +9,8 @@ import (
 	"go-ddd/constant"
 	"go-ddd/infrastructure/persistence"
 	"go-ddd/interface/handler"
+	xerrors2 "go-ddd/pkg/xerrors"
 	"go-ddd/usecase"
-	"go-ddd/util/xerrors"
 )
 
 func registerRoute(engine *gin.Engine) {
@@ -79,13 +79,13 @@ func hf(handlerFunc handlerFunc) gin.HandlerFunc {
 
 		if err != nil {
 			switch v := err.(type) {
-			case *xerrors.Expected:
+			case *xerrors2.Expected:
 				if v.StatusOk() {
 					return
 				} else {
 					c.JSON(v.StatusCode(), v.Message())
 				}
-			case *xerrors.Validation:
+			case *xerrors2.Validation:
 				c.JSON(http.StatusBadRequest, v)
 			default:
 				if gin.Mode() == gin.DebugMode {

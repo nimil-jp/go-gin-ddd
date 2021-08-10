@@ -4,8 +4,8 @@ import (
 	"time"
 
 	"go-ddd/domain"
+	"go-ddd/pkg/xerrors"
 	"go-ddd/resource/request"
-	"go-ddd/util/xerrors"
 )
 
 type User struct {

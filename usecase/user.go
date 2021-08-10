@@ -8,10 +8,10 @@ import (
 	"go-ddd/constant"
 	"go-ddd/domain/entity"
 	"go-ddd/domain/repository"
+	xerrors2 "go-ddd/pkg/xerrors"
 	"go-ddd/resource/request"
 	"go-ddd/resource/response"
 	"go-ddd/util"
-	"go-ddd/util/xerrors"
 	"gorm.io/gorm"
 )
 
@@ -35,7 +35,7 @@ func NewUser(tr repository.IUser) IUser {
 }
 
 func (u user) Create(req *request.UserCreate) (uint, error) {
-	verr := xerrors.NewValidation()
+	verr := xerrors2.NewValidation()
 
 	email, err := u.userRepo.EmailExists(util.DB, req.Email)
 	if err != nil {
@@ -67,7 +67,7 @@ func (u user) ResetPasswordRequest(req *request.UserResetPasswordRequest) (*resp
 	user, err := u.userRepo.GetByEmail(util.DB, req.Email)
 	if err != nil {
 		switch v := err.(type) {
-		case *xerrors.Expected:
+		case *xerrors2.Expected:
 			if !v.ChangeStatus(http.StatusNotFound, http.StatusOK) {
 				return nil, err
 			}
@@ -108,7 +108,7 @@ func (u user) ResetPasswordRequest(req *request.UserResetPasswordRequest) (*resp
 }
 
 func (u user) ResetPassword(req *request.UserResetPassword) error {
-	verr := xerrors.NewValidation()
+	verr := xerrors2.NewValidation()
 
 	user, err := u.userRepo.GetByRecoveryToken(util.DB, req.RecoveryToken)
 	if err != nil {
