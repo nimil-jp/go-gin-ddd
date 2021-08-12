@@ -54,7 +54,7 @@ func main() {
 		),
 	)
 
-	registerRoute(engine)
+	inject(engine)
 
 	logger.Info("Succeeded in setting up routes.")
 

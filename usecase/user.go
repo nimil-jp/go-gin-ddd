@@ -8,7 +8,7 @@ import (
 	"go-ddd/constant"
 	"go-ddd/domain/entity"
 	"go-ddd/domain/repository"
-	xerrors2 "go-ddd/pkg/xerrors"
+	"go-ddd/pkg/xerrors"
 	"go-ddd/resource/request"
 	"go-ddd/resource/response"
 	"go-ddd/util"
@@ -25,17 +25,19 @@ type IUser interface {
 }
 
 type user struct {
-	userRepo repository.IUser
+	emailRepo repository.IEmail
+	userRepo  repository.IUser
 }
 
-func NewUser(tr repository.IUser) IUser {
+func NewUser(email repository.IEmail, tr repository.IUser) IUser {
 	return &user{
-		userRepo: tr,
+		emailRepo: email,
+		userRepo:  tr,
 	}
 }
 
 func (u user) Create(req *request.UserCreate) (uint, error) {
-	verr := xerrors2.NewValidation()
+	verr := xerrors.NewValidation()
 
 	email, err := u.userRepo.EmailExists(util.DB, req.Email)
 	if err != nil {
@@ -43,7 +45,7 @@ func (u user) Create(req *request.UserCreate) (uint, error) {
 	}
 
 	if email {
-		verr.Add("Email", "既に使用されています")
+		verr.Add("IEmail", "既に使用されています")
 	}
 
 	newUser, err := entity.NewUser(verr, req)
@@ -67,7 +69,7 @@ func (u user) ResetPasswordRequest(req *request.UserResetPasswordRequest) (*resp
 	user, err := u.userRepo.GetByEmail(util.DB, req.Email)
 	if err != nil {
 		switch v := err.(type) {
-		case *xerrors2.Expected:
+		case *xerrors.Expected:
 			if !v.ChangeStatus(http.StatusNotFound, http.StatusOK) {
 				return nil, err
 			}
@@ -91,7 +93,7 @@ func (u user) ResetPasswordRequest(req *request.UserResetPasswordRequest) (*resp
 				return err
 			}
 
-			err = sendMail(user.Email, "パスワードリセット", token)
+			err = u.emailRepo.Send(user.Email, "パスワードリセット", token)
 			if err != nil {
 				return err
 			}
@@ -108,7 +110,7 @@ func (u user) ResetPasswordRequest(req *request.UserResetPasswordRequest) (*resp
 }
 
 func (u user) ResetPassword(req *request.UserResetPassword) error {
-	verr := xerrors2.NewValidation()
+	verr := xerrors.NewValidation()
 
 	user, err := u.userRepo.GetByRecoveryToken(util.DB, req.RecoveryToken)
 	if err != nil {

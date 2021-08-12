@@ -1,10 +1,13 @@
-package entity
+package main
 
-import "go-ddd/util"
+import (
+	"go-ddd/domain/entity"
+	"go-ddd/util"
+)
 
 func init() {
 	err := util.DB.AutoMigrate(
-		&User{},
+		&entity.User{},
 	)
 	if err != nil {
 		panic(err)

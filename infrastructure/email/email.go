@@ -1,13 +1,20 @@
-package usecase
+package email
 
 import (
 	"strconv"
 
 	"go-ddd/config"
+	"go-ddd/domain/repository"
 	"gopkg.in/gomail.v2"
 )
 
-func sendMail(to string, subject string, body string) error {
+type email struct{}
+
+func New() repository.IEmail {
+	return &email{}
+}
+
+func (e email) Send(to string, subject string, body string) error {
 	m := gomail.NewMessage()
 
 	m.SetBody("text/html", body)

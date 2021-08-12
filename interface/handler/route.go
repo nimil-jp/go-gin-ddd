@@ -1,47 +1,12 @@
-package main
+package handler
 
 import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	jwt "github.com/ken109/gin-jwt"
 	"github.com/pkg/errors"
-	"go-ddd/constant"
-	"go-ddd/infrastructure/persistence"
-	"go-ddd/interface/handler"
-	xerrors2 "go-ddd/pkg/xerrors"
-	"go-ddd/usecase"
+	"go-ddd/pkg/xerrors"
 )
-
-func registerRoute(engine *gin.Engine) {
-	// dependencies injection
-	// persistence
-	userPersistence := persistence.NewUser()
-
-	// use case
-	userUseCase := usecase.NewUser(userPersistence)
-
-	// handler
-	userHandler := handler.NewUser(userUseCase)
-
-	// define routes
-	{
-		user := engine.Group("user")
-		post(user, "", userHandler.Create)
-		post(user, "login", userHandler.Login)
-		get(user, "refresh-token", userHandler.RefreshToken)
-		patch(user, "reset-password-request", userHandler.ResetPasswordRequest)
-		patch(user, "reset-password", userHandler.ResetPassword)
-
-		userA := user.Group("")
-		userA.Use(jwt.Verify(constant.DefaultRealm))
-		userA.GET(
-			"auth", func(c *gin.Context) {
-				c.Status(200)
-			},
-		)
-	}
-}
 
 type handlerFunc func(c *gin.Context) error
 
@@ -79,13 +44,13 @@ func hf(handlerFunc handlerFunc) gin.HandlerFunc {
 
 		if err != nil {
 			switch v := err.(type) {
-			case *xerrors2.Expected:
+			case *xerrors.Expected:
 				if v.StatusOk() {
 					return
 				} else {
 					c.JSON(v.StatusCode(), v.Message())
 				}
-			case *xerrors2.Validation:
+			case *xerrors.Validation:
 				c.JSON(http.StatusBadRequest, v)
 			default:
 				if gin.Mode() == gin.DebugMode {
