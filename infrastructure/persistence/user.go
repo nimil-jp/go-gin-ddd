@@ -1,10 +1,12 @@
 package persistence
 
 import (
+	"context"
+
 	"github.com/pkg/errors"
 	"go-ddd/domain/entity"
 	"go-ddd/domain/repository"
-	"gorm.io/gorm"
+	"go-ddd/pkg/tx"
 )
 
 type user struct{}
@@ -13,14 +15,18 @@ func NewUser() repository.IUser {
 	return &user{}
 }
 
-func (u user) Create(db *gorm.DB, user *entity.User) (uint, error) {
+func (u user) Create(ctx context.Context, user *entity.User) (uint, error) {
+	db := tx.Get(ctx)
+
 	if err := db.Create(user).Error; err != nil {
 		return 0, errors.WithStack(err)
 	}
 	return user.ID, nil
 }
 
-func (u user) GetByEmail(db *gorm.DB, email string) (*entity.User, error) {
+func (u user) GetByEmail(ctx context.Context, email string) (*entity.User, error) {
+	db := tx.Get(ctx)
+
 	var dest entity.User
 	err := db.Where(&entity.User{Email: email}).First(&dest).Error
 	if err != nil {
@@ -29,7 +35,9 @@ func (u user) GetByEmail(db *gorm.DB, email string) (*entity.User, error) {
 	return &dest, nil
 }
 
-func (u user) GetByRecoveryToken(db *gorm.DB, recoveryToken string) (*entity.User, error) {
+func (u user) GetByRecoveryToken(ctx context.Context, recoveryToken string) (*entity.User, error) {
+	db := tx.Get(ctx)
+
 	var dest entity.User
 	err := db.Where(&entity.User{RecoveryToken: &recoveryToken}).First(&dest).Error
 	if err != nil {
@@ -38,11 +46,15 @@ func (u user) GetByRecoveryToken(db *gorm.DB, recoveryToken string) (*entity.Use
 	return &dest, nil
 }
 
-func (u user) Update(db *gorm.DB, user *entity.User) error {
+func (u user) Update(ctx context.Context, user *entity.User) error {
+	db := tx.Get(ctx)
+
 	return db.Model(user).Updates(user).Error
 }
 
-func (u user) EmailExists(db *gorm.DB, email string) (bool, error) {
+func (u user) EmailExists(ctx context.Context, email string) (bool, error) {
+	db := tx.Get(ctx)
+
 	var count int64
 	if err := db.Model(&entity.User{}).Where(&entity.User{Email: email}).Count(&count).Error; err != nil {
 		return false, errors.WithStack(err)

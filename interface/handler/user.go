@@ -31,7 +31,7 @@ func (u User) Create(c *gin.Context) error {
 		return nil
 	}
 
-	id, err := u.userUseCase.Create(&req)
+	id, err := u.userUseCase.Create(newCtx(), &req)
 	if err != nil {
 		return err
 	}
@@ -47,7 +47,7 @@ func (u User) ResetPasswordRequest(c *gin.Context) error {
 		return nil
 	}
 
-	res, err := u.userUseCase.ResetPasswordRequest(&req)
+	res, err := u.userUseCase.ResetPasswordRequest(newCtx(), &req)
 	if err != nil {
 		return err
 	}
@@ -63,7 +63,7 @@ func (u User) ResetPassword(c *gin.Context) error {
 		return nil
 	}
 
-	err := u.userUseCase.ResetPassword(&req)
+	err := u.userUseCase.ResetPassword(newCtx(), &req)
 	if err != nil {
 		return err
 	}
@@ -79,7 +79,7 @@ func (u User) Login(c *gin.Context) error {
 		return nil
 	}
 
-	res, err := u.userUseCase.Login(&req)
+	res, err := u.userUseCase.Login(newCtx(), &req)
 	if err != nil {
 		return err
 	}

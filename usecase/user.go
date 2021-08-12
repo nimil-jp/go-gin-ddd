@@ -1,6 +1,7 @@
 package usecase
 
 import (
+	"context"
 	"net/http"
 
 	jwt "github.com/ken109/gin-jwt"
@@ -8,19 +9,21 @@ import (
 	"go-ddd/constant"
 	"go-ddd/domain/entity"
 	"go-ddd/domain/repository"
+	"go-ddd/pkg/tx"
 	"go-ddd/pkg/xerrors"
 	"go-ddd/resource/request"
 	"go-ddd/resource/response"
-	"go-ddd/util"
-	"gorm.io/gorm"
 )
 
 type IUser interface {
-	Create(req *request.UserCreate) (uint, error)
+	Create(ctx context.Context, req *request.UserCreate) (uint, error)
 
-	ResetPasswordRequest(req *request.UserResetPasswordRequest) (*response.UserResetPasswordRequest, error)
-	ResetPassword(req *request.UserResetPassword) error
-	Login(req *request.UserLogin) (*response.UserLogin, error)
+	ResetPasswordRequest(
+		ctx context.Context,
+		req *request.UserResetPasswordRequest,
+	) (*response.UserResetPasswordRequest, error)
+	ResetPassword(ctx context.Context, req *request.UserResetPassword) error
+	Login(ctx context.Context, req *request.UserLogin) (*response.UserLogin, error)
 	RefreshToken(refreshToken string) (*response.UserLogin, error)
 }
 
@@ -36,16 +39,16 @@ func NewUser(email repository.IEmail, tr repository.IUser) IUser {
 	}
 }
 
-func (u user) Create(req *request.UserCreate) (uint, error) {
+func (u user) Create(ctx context.Context, req *request.UserCreate) (uint, error) {
 	verr := xerrors.NewValidation()
 
-	email, err := u.userRepo.EmailExists(util.DB, req.Email)
+	email, err := u.userRepo.EmailExists(ctx, req.Email)
 	if err != nil {
 		return 0, err
 	}
 
 	if email {
-		verr.Add("IEmail", "既に使用されています")
+		verr.Add("Email", "既に使用されています")
 	}
 
 	newUser, err := entity.NewUser(verr, req)
@@ -57,7 +60,7 @@ func (u user) Create(req *request.UserCreate) (uint, error) {
 		return 0, verr
 	}
 
-	id, err := u.userRepo.Create(util.DB, newUser)
+	id, err := u.userRepo.Create(ctx, newUser)
 	if err != nil {
 		return 0, err
 	}
@@ -65,8 +68,11 @@ func (u user) Create(req *request.UserCreate) (uint, error) {
 	return id, nil
 }
 
-func (u user) ResetPasswordRequest(req *request.UserResetPasswordRequest) (*response.UserResetPasswordRequest, error) {
-	user, err := u.userRepo.GetByEmail(util.DB, req.Email)
+func (u user) ResetPasswordRequest(
+	ctx context.Context,
+	req *request.UserResetPasswordRequest,
+) (*response.UserResetPasswordRequest, error) {
+	user, err := u.userRepo.GetByEmail(ctx, req.Email)
 	if err != nil {
 		switch v := err.(type) {
 		case *xerrors.Expected:
@@ -86,9 +92,10 @@ func (u user) ResetPasswordRequest(req *request.UserResetPasswordRequest) (*resp
 		return nil, err
 	}
 
-	err = util.DB.Transaction(
-		func(tx *gorm.DB) error {
-			err = u.userRepo.Update(util.DB, user)
+	err = tx.Do(
+		ctx,
+		func(ctx context.Context) error {
+			err = u.userRepo.Update(ctx, user)
 			if err != nil {
 				return err
 			}
@@ -109,10 +116,10 @@ func (u user) ResetPasswordRequest(req *request.UserResetPasswordRequest) (*resp
 	return &res, nil
 }
 
-func (u user) ResetPassword(req *request.UserResetPassword) error {
+func (u user) ResetPassword(ctx context.Context, req *request.UserResetPassword) error {
 	verr := xerrors.NewValidation()
 
-	user, err := u.userRepo.GetByRecoveryToken(util.DB, req.RecoveryToken)
+	user, err := u.userRepo.GetByRecoveryToken(ctx, req.RecoveryToken)
 	if err != nil {
 		return err
 	}
@@ -126,11 +133,11 @@ func (u user) ResetPassword(req *request.UserResetPassword) error {
 		return verr
 	}
 
-	return u.userRepo.Update(util.DB, user)
+	return u.userRepo.Update(ctx, user)
 }
 
-func (u user) Login(req *request.UserLogin) (*response.UserLogin, error) {
-	user, err := u.userRepo.GetByEmail(util.DB, req.Email)
+func (u user) Login(ctx context.Context, req *request.UserLogin) (*response.UserLogin, error) {
+	user, err := u.userRepo.GetByEmail(ctx, req.Email)
 	if err != nil {
 		return nil, err
 	}
