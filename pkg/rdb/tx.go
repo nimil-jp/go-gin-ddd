@@ -1,22 +1,19 @@
-package tx
+package rdb
 
 import (
 	"context"
 
-	"go-ddd/util"
 	"gorm.io/gorm"
 )
 
 var key = struct{}{}
 
-type txFunc func(ctx context.Context) error
-
-func Do(ctx context.Context, f txFunc) error {
-	return util.DB.Transaction(
+func Transaction(ctx context.Context, fn func(ctx context.Context) error) error {
+	return db.Transaction(
 		func(tx *gorm.DB) error {
 			ctx := context.WithValue(ctx, &key, tx)
 
-			return f(ctx)
+			return fn(ctx)
 		},
 	)
 }
@@ -26,5 +23,5 @@ func Get(ctx context.Context) *gorm.DB {
 	if ok {
 		return tx
 	}
-	return util.DB
+	return db
 }

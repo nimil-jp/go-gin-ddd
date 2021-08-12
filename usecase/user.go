@@ -9,7 +9,7 @@ import (
 	"go-ddd/constant"
 	"go-ddd/domain/entity"
 	"go-ddd/domain/repository"
-	"go-ddd/pkg/tx"
+	"go-ddd/pkg/rdb"
 	"go-ddd/pkg/xerrors"
 	"go-ddd/resource/request"
 	"go-ddd/resource/response"
@@ -92,7 +92,7 @@ func (u user) ResetPasswordRequest(
 		return nil, err
 	}
 
-	err = tx.Do(
+	err = rdb.Transaction(
 		ctx,
 		func(ctx context.Context) error {
 			err = u.userRepo.Update(ctx, user)

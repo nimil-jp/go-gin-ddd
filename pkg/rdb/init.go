@@ -1,4 +1,4 @@
-package util
+package rdb
 
 import (
 	"fmt"
@@ -8,7 +8,7 @@ import (
 	"gorm.io/gorm"
 )
 
-var DB *gorm.DB
+var db *gorm.DB
 
 func init() {
 	var err error
@@ -28,7 +28,12 @@ func init() {
 		config.Env.DB.Name,
 	)
 
-	DB, err = gorm.Open(mysql.Open(dsn), &gorm.Config{})
+	db, err = gorm.Open(mysql.Open(dsn), &gorm.Config{})
+	if err != nil {
+		panic(err)
+	}
+
+	err = migrate()
 	if err != nil {
 		panic(err)
 	}
