@@ -11,7 +11,8 @@ import (
 var Env EnvType
 
 type EnvType struct {
-	App struct {
+	Port string `default:"8080"`
+	App  struct {
 		Secret string
 		URL    string
 	}

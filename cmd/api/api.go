@@ -1,7 +1,8 @@
-package main
+package api
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 	"os"
 	"os/signal"
@@ -22,7 +23,7 @@ import (
 	"go-gin-ddd/usecase"
 )
 
-func main() {
+func Execute() {
 	logger := log.Logger()
 
 	err := jwt.SetUp(
@@ -85,13 +86,8 @@ func main() {
 	logger.Info("Succeeded in setting up routes.")
 
 	// serve
-	var port = ":8080"
-	if portEnv := os.Getenv("PORT"); portEnv != "" {
-		port = portEnv
-	}
-
 	srv := &http.Server{
-		Addr:    port,
+		Addr:    fmt.Sprintf(":%s", config.Env.Port),
 		Handler: engine,
 	}
 
