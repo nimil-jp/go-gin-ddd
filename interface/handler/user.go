@@ -13,16 +13,10 @@ type User struct {
 	userUseCase usecase.IUser
 }
 
-func NewUser(route *gin.RouterGroup, uuc usecase.IUser) {
-	handler := User{
+func NewUser(uuc usecase.IUser) *User {
+	return &User{
 		userUseCase: uuc,
 	}
-
-	post(route, "", handler.Create)
-	post(route, "login", handler.Login)
-	get(route, "refresh-token", handler.RefreshToken)
-	patch(route, "reset-password-request", handler.ResetPasswordRequest)
-	patch(route, "reset-password", handler.ResetPassword)
 }
 
 func (u User) Create(c *gin.Context) error {

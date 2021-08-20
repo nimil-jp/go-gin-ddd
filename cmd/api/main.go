@@ -14,8 +14,12 @@ import (
 
 	"go-gin-ddd/config"
 	"go-gin-ddd/constant"
+	"go-gin-ddd/infrastructure/email"
 	"go-gin-ddd/infrastructure/log"
+	"go-gin-ddd/infrastructure/persistence"
+	"go-gin-ddd/interface/handler"
 	"go-gin-ddd/interface/middleware"
+	"go-gin-ddd/usecase"
 )
 
 func main() {
@@ -55,7 +59,28 @@ func main() {
 		),
 	)
 
-	inject(engine)
+	// dependencies injection
+	// ----- infrastructure -----
+	emailDriver := email.New()
+
+	// persistence
+	userPersistence := persistence.NewUser()
+
+	// ----- use case -----
+	userUseCase := usecase.NewUser(emailDriver, userPersistence)
+
+	// ----- handler -----
+	userHandler := handler.NewUser(userUseCase)
+
+	// routes
+	{
+		user := engine.Group("user")
+		post(user, "", userHandler.Create)
+		post(user, "login", userHandler.Login)
+		get(user, "refresh-token", userHandler.RefreshToken)
+		patch(user, "reset-password-request", userHandler.ResetPasswordRequest)
+		patch(user, "reset-password", userHandler.ResetPassword)
+	}
 
 	logger.Info("Succeeded in setting up routes.")
 
@@ -71,7 +96,7 @@ func main() {
 	}
 
 	go func() {
-		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+		if err = srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			panic(err)
 		}
 	}()
