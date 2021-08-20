@@ -3,7 +3,7 @@ package repository
 import (
 	"context"
 
-	"go-ddd/domain/entity"
+	"go-gin-ddd/domain/entity"
 )
 
 type IUser interface {

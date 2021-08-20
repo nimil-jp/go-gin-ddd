@@ -11,10 +11,10 @@ import (
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/ken109/gin-jwt"
-	"go-ddd/config"
-	"go-ddd/constant"
-	"go-ddd/infrastructure/log"
-	"go-ddd/interface/middleware"
+	"go-gin-ddd/config"
+	"go-gin-ddd/constant"
+	"go-gin-ddd/infrastructure/log"
+	"go-gin-ddd/interface/middleware"
 )
 
 func main() {

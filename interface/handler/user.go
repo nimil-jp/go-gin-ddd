@@ -4,8 +4,8 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"go-ddd/resource/request"
-	"go-ddd/usecase"
+	"go-gin-ddd/resource/request"
+	"go-gin-ddd/usecase"
 )
 
 type User struct {

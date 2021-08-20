@@ -5,7 +5,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/pkg/errors"
-	"go-ddd/pkg/xerrors"
+	"go-gin-ddd/pkg/xerrors"
 )
 
 type handlerFunc func(c *gin.Context) error

@@ -3,8 +3,8 @@ package email
 import (
 	"strconv"
 
-	"go-ddd/config"
-	"go-ddd/domain/repository"
+	"go-gin-ddd/config"
+	"go-gin-ddd/domain/repository"
 	"gopkg.in/gomail.v2"
 )
 

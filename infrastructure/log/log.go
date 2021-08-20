@@ -2,7 +2,7 @@ package log
 
 import (
 	"github.com/gin-gonic/gin"
-	"go-ddd/domain/repository"
+	"go-gin-ddd/domain/repository"
 	"go.uber.org/zap"
 )
 

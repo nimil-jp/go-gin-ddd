@@ -1,6 +1,6 @@
 package rdb
 
-import "go-ddd/domain/entity"
+import "go-gin-ddd/domain/entity"
 
 func migrate() error {
 	return db.AutoMigrate(

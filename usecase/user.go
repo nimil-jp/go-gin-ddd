@@ -6,13 +6,13 @@ import (
 
 	jwt "github.com/ken109/gin-jwt"
 	"github.com/pkg/errors"
-	"go-ddd/constant"
-	"go-ddd/domain/entity"
-	"go-ddd/domain/repository"
-	"go-ddd/pkg/rdb"
-	"go-ddd/pkg/xerrors"
-	"go-ddd/resource/request"
-	"go-ddd/resource/response"
+	"go-gin-ddd/constant"
+	"go-gin-ddd/domain/entity"
+	"go-gin-ddd/domain/repository"
+	"go-gin-ddd/pkg/rdb"
+	"go-gin-ddd/pkg/xerrors"
+	"go-gin-ddd/resource/request"
+	"go-gin-ddd/resource/response"
 )
 
 type IUser interface {
