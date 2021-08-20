@@ -2,8 +2,9 @@ package persistence
 
 import (
 	"github.com/pkg/errors"
-	"go-gin-ddd/pkg/xerrors"
 	"gorm.io/gorm"
+
+	"go-gin-ddd/pkg/xerrors"
 )
 
 func dbError(err error) error {

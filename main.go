@@ -11,6 +11,7 @@ import (
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/ken109/gin-jwt"
+
 	"go-gin-ddd/config"
 	"go-gin-ddd/constant"
 	"go-gin-ddd/infrastructure/log"

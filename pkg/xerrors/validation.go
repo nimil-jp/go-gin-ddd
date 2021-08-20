@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 
 	"github.com/go-playground/validator/v10"
+
 	"go-gin-ddd/pkg/util"
 	"go-gin-ddd/pkg/validation"
 )

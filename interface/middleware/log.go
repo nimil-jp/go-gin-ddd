@@ -10,8 +10,9 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"go-gin-ddd/domain/repository"
 	"go.uber.org/zap"
+
+	"go-gin-ddd/domain/repository"
 )
 
 func Log(logger repository.ILogger, timeFormat string, utc bool) gin.HandlerFunc {

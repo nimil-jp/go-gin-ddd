@@ -2,8 +2,9 @@ package log
 
 import (
 	"github.com/gin-gonic/gin"
-	"go-gin-ddd/domain/repository"
 	"go.uber.org/zap"
+
+	"go-gin-ddd/domain/repository"
 )
 
 func init() {

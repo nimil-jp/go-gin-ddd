@@ -3,9 +3,10 @@ package email
 import (
 	"strconv"
 
+	"gopkg.in/gomail.v2"
+
 	"go-gin-ddd/config"
 	"go-gin-ddd/domain/repository"
-	"gopkg.in/gomail.v2"
 )
 
 type email struct{}

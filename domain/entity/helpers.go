@@ -5,8 +5,9 @@ import (
 
 	"github.com/noknow-hub/go_crypto"
 	"github.com/pkg/errors"
-	"go-gin-ddd/config"
 	"golang.org/x/crypto/bcrypt"
+
+	"go-gin-ddd/config"
 )
 
 func emptyPointer() *string {

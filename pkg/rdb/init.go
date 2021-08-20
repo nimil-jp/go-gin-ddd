@@ -3,9 +3,10 @@ package rdb
 import (
 	"fmt"
 
-	"go-gin-ddd/config"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
+
+	"go-gin-ddd/config"
 )
 
 var db *gorm.DB

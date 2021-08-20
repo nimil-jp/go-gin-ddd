@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/gin-gonic/gin"
+
 	"go-gin-ddd/infrastructure/email"
 	"go-gin-ddd/infrastructure/persistence"
 	"go-gin-ddd/interface/handler"
