@@ -46,3 +46,5 @@ require (
 	gorm.io/driver/mysql v1.1.2
 	gorm.io/gorm v1.21.13
 )
+
+replace github.com/go-playground/validator/v10 => github.com/ken109/validator/v10 v10.9.1-0.20211013123912-3fec5d90da71

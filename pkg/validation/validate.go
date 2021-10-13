@@ -1,7 +1,6 @@
 package validation
 
 import (
-	"log"
 	"reflect"
 
 	"github.com/go-playground/locales/ja"
@@ -19,6 +18,8 @@ var (
 )
 
 func init() {
+	validate.UseActualTagWhenTranslate()
+
 	jp := ja.New()
 	uni = ut.New(jp, jp)
 	translator, _ = uni.GetTranslator("ja")
@@ -61,10 +62,9 @@ func registerTrans(tag string, translation string) {
 	}
 
 	translateFunc := func(ut ut.Translator, fe validator.FieldError) string {
-		t, err := ut.T(fe.Tag(), fe.Field())
+		t, err := ut.T(fe.ActualTag(), fe.Field())
 		if err != nil {
-			log.Printf("warning: error translating FieldError: %#validate", fe)
-			return fe.(error).Error()
+			return "入力された値が正しくありません。"
 		}
 		return t
 	}
