@@ -31,21 +31,30 @@ func Log(logger log.ILogger, timeFormat string, utc bool) gin.HandlerFunc {
 			end = end.UTC()
 		}
 
-		logger.Info(
-			path,
-			zap.String("request-id", c.GetString("request-id")),
-			zap.Int("status", c.Writer.Status()),
-			zap.String("method", c.Request.Method),
-			zap.String("path", path),
-			zap.String("query", query),
-			zap.String("ip", c.ClientIP()),
-			zap.String("user-agent", c.Request.UserAgent()),
-			zap.String("time", end.Format(timeFormat)),
-			zap.Duration("latency", latency),
+		var (
+			logFunc = logger.Info
+			fields  = []zap.Field{
+				zap.String("request-id", c.GetString("request-id")),
+				zap.Int("status", c.Writer.Status()),
+				zap.String("method", c.Request.Method),
+				zap.String("path", path),
+				zap.String("query", query),
+				zap.String("ip", c.ClientIP()),
+				zap.String("user-agent", c.Request.UserAgent()),
+				zap.String("time", end.Format(timeFormat)),
+				zap.Duration("latency", latency),
+			}
 		)
-		for _, e := range c.Errors.Errors() {
-			logger.Error(e)
+
+		status := c.Writer.Status()
+		if status >= 400 {
+			fields = append(fields, zap.Strings("errors", c.Errors.Errors()))
 		}
+		if status >= 500 {
+			logFunc = logger.Error
+		}
+
+		logFunc(path, fields...)
 	}
 }
 

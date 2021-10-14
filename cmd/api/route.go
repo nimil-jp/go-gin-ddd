@@ -60,9 +60,9 @@ func hf(handlerFunc handlerFunc) gin.HandlerFunc {
 				c.JSON(http.StatusBadRequest, v)
 			default:
 				if gin.Mode() == gin.DebugMode {
-					c.String(http.StatusInternalServerError, "%+v", v)
+					c.JSONP(http.StatusInternalServerError, map[string]string{"request_id": ctx.RequestId(), "error": v.Error()})
 				} else {
-					c.Status(http.StatusInternalServerError)
+					c.JSONP(http.StatusInternalServerError, map[string]string{"request_id": ctx.RequestId()})
 				}
 			}
 

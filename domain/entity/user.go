@@ -13,7 +13,7 @@ type User struct {
 	Email    string `json:"email"`
 	Password string `json:"password"`
 
-	RecoveryToken *string `json:"-"`
+	RecoveryToken *string `json:"-" gorm:"index"`
 }
 
 func NewUser(ctx context.Context, dto *request.UserCreate) (*User, error) {
