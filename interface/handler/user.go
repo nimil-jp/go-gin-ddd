@@ -5,6 +5,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 
+	"go-gin-ddd/pkg/context"
 	"go-gin-ddd/resource/request"
 	"go-gin-ddd/usecase"
 )
@@ -19,14 +20,14 @@ func NewUser(uuc usecase.IUser) *User {
 	}
 }
 
-func (u User) Create(c *gin.Context) error {
+func (u User) Create(ctx context.Context, c *gin.Context) error {
 	var req request.UserCreate
 
 	if !bind(c, &req) {
 		return nil
 	}
 
-	id, err := u.userUseCase.Create(newCtx(), &req)
+	id, err := u.userUseCase.Create(ctx, &req)
 	if err != nil {
 		return err
 	}
@@ -35,14 +36,14 @@ func (u User) Create(c *gin.Context) error {
 	return nil
 }
 
-func (u User) ResetPasswordRequest(c *gin.Context) error {
+func (u User) ResetPasswordRequest(ctx context.Context, c *gin.Context) error {
 	var req request.UserResetPasswordRequest
 
 	if !bind(c, &req) {
 		return nil
 	}
 
-	res, err := u.userUseCase.ResetPasswordRequest(newCtx(), &req)
+	res, err := u.userUseCase.ResetPasswordRequest(ctx, &req)
 	if err != nil {
 		return err
 	}
@@ -51,14 +52,14 @@ func (u User) ResetPasswordRequest(c *gin.Context) error {
 	return nil
 }
 
-func (u User) ResetPassword(c *gin.Context) error {
+func (u User) ResetPassword(ctx context.Context, c *gin.Context) error {
 	var req request.UserResetPassword
 
 	if !bind(c, &req) {
 		return nil
 	}
 
-	err := u.userUseCase.ResetPassword(newCtx(), &req)
+	err := u.userUseCase.ResetPassword(ctx, &req)
 	if err != nil {
 		return err
 	}
@@ -67,14 +68,14 @@ func (u User) ResetPassword(c *gin.Context) error {
 	return nil
 }
 
-func (u User) Login(c *gin.Context) error {
+func (u User) Login(ctx context.Context, c *gin.Context) error {
 	var req request.UserLogin
 
 	if !bind(c, &req) {
 		return nil
 	}
 
-	res, err := u.userUseCase.Login(newCtx(), &req)
+	res, err := u.userUseCase.Login(ctx, &req)
 	if err != nil {
 		return err
 	}
@@ -88,7 +89,7 @@ func (u User) Login(c *gin.Context) error {
 	return nil
 }
 
-func (u User) RefreshToken(c *gin.Context) error {
+func (u User) RefreshToken(_ context.Context, c *gin.Context) error {
 	res, err := u.userUseCase.RefreshToken(c.Query("refresh_token"))
 	if err != nil {
 		return err

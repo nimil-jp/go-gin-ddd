@@ -1,13 +1,11 @@
 package persistence
 
 import (
-	"context"
-
 	"github.com/pkg/errors"
 
 	"go-gin-ddd/domain/entity"
 	"go-gin-ddd/domain/repository"
-	"go-gin-ddd/driver/rdb"
+	"go-gin-ddd/pkg/context"
 )
 
 type user struct{}
@@ -17,7 +15,7 @@ func NewUser() repository.IUser {
 }
 
 func (u user) Create(ctx context.Context, user *entity.User) (uint, error) {
-	db := rdb.Get(ctx)
+	db := ctx.DB()
 
 	if err := db.Create(user).Error; err != nil {
 		return 0, errors.WithStack(err)
@@ -26,7 +24,7 @@ func (u user) Create(ctx context.Context, user *entity.User) (uint, error) {
 }
 
 func (u user) GetByEmail(ctx context.Context, email string) (*entity.User, error) {
-	db := rdb.Get(ctx)
+	db := ctx.DB()
 
 	var dest entity.User
 	err := db.Where(&entity.User{Email: email}).First(&dest).Error
@@ -37,7 +35,7 @@ func (u user) GetByEmail(ctx context.Context, email string) (*entity.User, error
 }
 
 func (u user) GetByRecoveryToken(ctx context.Context, recoveryToken string) (*entity.User, error) {
-	db := rdb.Get(ctx)
+	db := ctx.DB()
 
 	var dest entity.User
 	err := db.Where(&entity.User{RecoveryToken: &recoveryToken}).First(&dest).Error
@@ -48,13 +46,13 @@ func (u user) GetByRecoveryToken(ctx context.Context, recoveryToken string) (*en
 }
 
 func (u user) Update(ctx context.Context, user *entity.User) error {
-	db := rdb.Get(ctx)
+	db := ctx.DB()
 
 	return db.Model(user).Updates(user).Error
 }
 
 func (u user) EmailExists(ctx context.Context, email string) (bool, error) {
-	db := rdb.Get(ctx)
+	db := ctx.DB()
 
 	var count int64
 	if err := db.Model(&entity.User{}).Where(&entity.User{Email: email}).Count(&count).Error; err != nil {

@@ -27,12 +27,12 @@ func (verr Validation) MarshalJSON() ([]byte, error) {
 	)
 }
 
-func (verr *Validation) Add(fieldName string, value string) {
+func (verr *Validation) Add(fieldName string, message string) {
 	key := util.SnakeCase(fieldName)
 	if _, ok := verr.errors[key]; !ok {
-		verr.errors[key] = []string{value}
+		verr.errors[key] = []string{message}
 	} else {
-		verr.errors[key] = append(verr.errors[key], value)
+		verr.errors[key] = append(verr.errors[key], message)
 	}
 }
 

@@ -6,10 +6,11 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/pkg/errors"
 
+	"go-gin-ddd/pkg/context"
 	"go-gin-ddd/pkg/xerrors"
 )
 
-type handlerFunc func(c *gin.Context) error
+type handlerFunc func(ctx context.Context, c *gin.Context) error
 
 func get(group *gin.RouterGroup, relativePath string, handlerFunc handlerFunc) {
 	group.GET(relativePath, hf(handlerFunc))
@@ -41,7 +42,11 @@ func head(group *gin.RouterGroup, relativePath string, handlerFunc handlerFunc) 
 
 func hf(handlerFunc handlerFunc) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		err := handlerFunc(c)
+		ctx := context.New()
+
+		err := handlerFunc(ctx, c)
+
+		c.Set("request-id", ctx.RequestId())
 
 		if err != nil {
 			switch v := err.(type) {

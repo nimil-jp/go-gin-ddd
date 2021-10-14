@@ -33,6 +33,7 @@ func Log(logger log.ILogger, timeFormat string, utc bool) gin.HandlerFunc {
 
 		logger.Info(
 			path,
+			zap.String("request-id", c.GetString("request-id")),
 			zap.Int("status", c.Writer.Status()),
 			zap.String("method", c.Request.Method),
 			zap.String("path", path),

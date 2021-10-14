@@ -1,9 +1,8 @@
 package repository
 
 import (
-	"context"
-
 	"go-gin-ddd/domain/entity"
+	"go-gin-ddd/pkg/context"
 )
 
 type IUser interface {

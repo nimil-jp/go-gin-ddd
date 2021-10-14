@@ -4,7 +4,7 @@ import (
 	"time"
 
 	"go-gin-ddd/domain"
-	"go-gin-ddd/pkg/xerrors"
+	"go-gin-ddd/pkg/context"
 	"go-gin-ddd/resource/request"
 )
 
@@ -16,12 +16,12 @@ type User struct {
 	RecoveryToken *string `json:"-"`
 }
 
-func NewUser(verr *xerrors.Validation, dto *request.UserCreate) (*User, error) {
+func NewUser(ctx context.Context, dto *request.UserCreate) (*User, error) {
 	var user = User{
 		Email: dto.Email,
 	}
 
-	ok, err := user.setPassword(verr, dto.Password, dto.PasswordConfirm)
+	ok, err := user.setPassword(ctx, dto.Password, dto.PasswordConfirm)
 	if err != nil || !ok {
 		return nil, err
 	}
@@ -29,9 +29,9 @@ func NewUser(verr *xerrors.Validation, dto *request.UserCreate) (*User, error) {
 	return &user, nil
 }
 
-func (u *User) setPassword(verr *xerrors.Validation, password, passwordConfirm string) (ok bool, err error) {
+func (u *User) setPassword(ctx context.Context, password, passwordConfirm string) (ok bool, err error) {
 	if password != passwordConfirm {
-		verr.Add("PasswordConfirm", "パスワードと一致しません")
+		ctx.FieldError("PasswordConfirm", "パスワードと一致しません")
 		return false, nil
 	}
 
@@ -57,13 +57,13 @@ func (u *User) ResetPasswordRequest() (token string, duration time.Duration, exp
 	return
 }
 
-func (u *User) ResetPassword(verr *xerrors.Validation, dto *request.UserResetPassword) error {
+func (u *User) ResetPassword(ctx context.Context, dto *request.UserResetPassword) error {
 	if !recoveryTokenIsValid(dto.RecoveryToken) {
-		verr.Add("RecoveryToken", "リカバリートークンが無効です")
+		ctx.FieldError("RecoveryToken", "リカバリートークンが無効です")
 		return nil
 	}
 
-	ok, err := u.setPassword(verr, dto.Password, dto.PasswordConfirm)
+	ok, err := u.setPassword(ctx, dto.Password, dto.PasswordConfirm)
 	if err != nil || !ok {
 		return err
 	}

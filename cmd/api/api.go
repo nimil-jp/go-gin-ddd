@@ -39,10 +39,10 @@ func Execute() {
 
 	engine := gin.New()
 
+	engine.GET("health", func(c *gin.Context) { c.Status(http.StatusOK) })
+
 	engine.Use(middleware.Log(logger, time.RFC3339, false))
 	engine.Use(middleware.RecoveryWithLog(logger, true))
-
-	engine.GET("health", func(c *gin.Context) { c.Status(http.StatusOK) })
 
 	// cors
 	engine.Use(

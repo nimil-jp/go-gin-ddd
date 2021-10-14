@@ -1,7 +1,6 @@
 package usecase
 
 import (
-	"context"
 	"net/http"
 
 	jwt "github.com/ken109/gin-jwt"
@@ -10,8 +9,8 @@ import (
 	"go-gin-ddd/config"
 	"go-gin-ddd/domain/entity"
 	"go-gin-ddd/domain/repository"
-	"go-gin-ddd/driver/rdb"
 	emailInfra "go-gin-ddd/infrastructure/email"
+	"go-gin-ddd/pkg/context"
 	"go-gin-ddd/pkg/xerrors"
 	"go-gin-ddd/resource/request"
 	"go-gin-ddd/resource/response"
@@ -42,24 +41,22 @@ func NewUser(email emailInfra.IEmail, tr repository.IUser) IUser {
 }
 
 func (u user) Create(ctx context.Context, req *request.UserCreate) (uint, error) {
-	verr := xerrors.NewValidation()
-
 	email, err := u.userRepo.EmailExists(ctx, req.Email)
 	if err != nil {
 		return 0, err
 	}
 
 	if email {
-		verr.Add("Email", "既に使用されています")
+		ctx.FieldError("Email", "既に使用されています")
 	}
 
-	newUser, err := entity.NewUser(verr, req)
+	newUser, err := entity.NewUser(ctx, req)
 	if err != nil {
 		return 0, err
 	}
 
-	if verr.IsInValid() {
-		return 0, verr
+	if ctx.IsInValid() {
+		return 0, ctx.ValidationError()
 	}
 
 	id, err := u.userRepo.Create(ctx, newUser)
@@ -94,8 +91,7 @@ func (u user) ResetPasswordRequest(
 		return nil, err
 	}
 
-	err = rdb.Transaction(
-		ctx,
+	err = ctx.Transaction(
 		func(ctx context.Context) error {
 			err = u.userRepo.Update(ctx, user)
 			if err != nil {
@@ -119,20 +115,18 @@ func (u user) ResetPasswordRequest(
 }
 
 func (u user) ResetPassword(ctx context.Context, req *request.UserResetPassword) error {
-	verr := xerrors.NewValidation()
-
 	user, err := u.userRepo.GetByRecoveryToken(ctx, req.RecoveryToken)
 	if err != nil {
 		return err
 	}
 
-	err = user.ResetPassword(verr, req)
+	err = user.ResetPassword(ctx, req)
 	if err != nil {
 		return err
 	}
 
-	if verr.IsInValid() {
-		return verr
+	if ctx.IsInValid() {
+		return ctx.ValidationError()
 	}
 
 	return u.userRepo.Update(ctx, user)
