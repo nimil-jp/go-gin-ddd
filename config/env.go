@@ -24,7 +24,7 @@ type EnvType struct {
 		Password string
 		Name     string
 	}
-	SMTP struct {
+	Smtp struct {
 		Host     string
 		Port     string
 		User     string
@@ -33,6 +33,10 @@ type EnvType struct {
 	Mail struct {
 		From string
 		Name string
+	}
+	Gcp struct {
+		CredentialPath string `split_words:"true"`
+		Bucket         string
 	}
 }
 

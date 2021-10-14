@@ -12,10 +12,10 @@ import (
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
 
-	"go-gin-ddd/domain/repository"
+	"go-gin-ddd/infrastructure/log"
 )
 
-func Log(logger repository.ILogger, timeFormat string, utc bool) gin.HandlerFunc {
+func Log(logger log.ILogger, timeFormat string, utc bool) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		defer logger.Sync()
 
@@ -48,7 +48,7 @@ func Log(logger repository.ILogger, timeFormat string, utc bool) gin.HandlerFunc
 	}
 }
 
-func RecoveryWithLog(logger repository.ILogger, stack bool) gin.HandlerFunc {
+func RecoveryWithLog(logger log.ILogger, stack bool) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		defer func() {
 			if err := recover(); err != nil {

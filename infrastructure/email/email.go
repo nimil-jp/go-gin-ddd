@@ -6,12 +6,15 @@ import (
 	"gopkg.in/gomail.v2"
 
 	"go-gin-ddd/config"
-	"go-gin-ddd/domain/repository"
 )
+
+type IEmail interface {
+	Send(to string, subject string, body string) error
+}
 
 type email struct{}
 
-func New() repository.IEmail {
+func New() IEmail {
 	return &email{}
 }
 
@@ -30,12 +33,12 @@ func (e email) Send(to string, subject string, body string) error {
 		},
 	)
 
-	port, err := strconv.Atoi(config.Env.SMTP.Port)
+	port, err := strconv.Atoi(config.Env.Smtp.Port)
 	if err != nil {
 		return err
 	}
 
-	d := gomail.NewDialer(config.Env.SMTP.Host, port, config.Env.SMTP.User, config.Env.SMTP.Password)
+	d := gomail.NewDialer(config.Env.Smtp.Host, port, config.Env.Smtp.User, config.Env.Smtp.Password)
 
 	if err = d.DialAndSend(m); err != nil {
 		return err

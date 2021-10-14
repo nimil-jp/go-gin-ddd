@@ -7,10 +7,11 @@ import (
 	jwt "github.com/ken109/gin-jwt"
 	"github.com/pkg/errors"
 
-	"go-gin-ddd/constant"
+	"go-gin-ddd/config"
 	"go-gin-ddd/domain/entity"
 	"go-gin-ddd/domain/repository"
-	"go-gin-ddd/pkg/rdb"
+	"go-gin-ddd/driver/rdb"
+	emailInfra "go-gin-ddd/infrastructure/email"
 	"go-gin-ddd/pkg/xerrors"
 	"go-gin-ddd/resource/request"
 	"go-gin-ddd/resource/response"
@@ -29,14 +30,14 @@ type IUser interface {
 }
 
 type user struct {
-	emailRepo repository.IEmail
-	userRepo  repository.IUser
+	email    emailInfra.IEmail
+	userRepo repository.IUser
 }
 
-func NewUser(email repository.IEmail, tr repository.IUser) IUser {
+func NewUser(email emailInfra.IEmail, tr repository.IUser) IUser {
 	return &user{
-		emailRepo: email,
-		userRepo:  tr,
+		email:    email,
+		userRepo: tr,
 	}
 }
 
@@ -101,7 +102,7 @@ func (u user) ResetPasswordRequest(
 				return err
 			}
 
-			err = u.emailRepo.Send(user.Email, "パスワードリセット", token)
+			err = u.email.Send(user.Email, "パスワードリセット", token)
 			if err != nil {
 				return err
 			}
@@ -146,7 +147,7 @@ func (u user) Login(ctx context.Context, req *request.UserLogin) (*response.User
 	if user.PasswordIsValid(req.Password) {
 		var res response.UserLogin
 
-		res.Token, res.RefreshToken, err = jwt.IssueToken(constant.DefaultRealm, jwt.Claims{})
+		res.Token, res.RefreshToken, err = jwt.IssueToken(config.DefaultRealm, jwt.Claims{})
 		if err != nil {
 			return nil, errors.WithStack(err)
 		}
@@ -162,7 +163,7 @@ func (u user) RefreshToken(refreshToken string) (*response.UserLogin, error) {
 		err error
 	)
 
-	ok, res.Token, res.RefreshToken, err = jwt.RefreshToken(constant.DefaultRealm, refreshToken)
+	ok, res.Token, res.RefreshToken, err = jwt.RefreshToken(config.DefaultRealm, refreshToken)
 	if err != nil {
 		return nil, errors.WithStack(err)
 	}

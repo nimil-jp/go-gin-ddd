@@ -3,8 +3,6 @@ package log
 import (
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
-
-	"go-gin-ddd/domain/repository"
 )
 
 func init() {
@@ -30,13 +28,27 @@ func init() {
 	}
 }
 
+type ILogger interface {
+	Sync()
+	Debug(msg string, fields ...zap.Field)
+	Info(msg string, fields ...zap.Field)
+	Warn(msg string, fields ...zap.Field)
+	Error(msg string, fields ...zap.Field)
+	Fatal(msg string, fields ...zap.Field)
+	Debugf(template string, args ...interface{})
+	Infof(template string, args ...interface{})
+	Warnf(template string, args ...interface{})
+	Errorf(template string, args ...interface{})
+	Fatalf(template string, args ...interface{})
+}
+
 type logger struct {
 	zapLog *zap.Logger
 }
 
 var log logger
 
-func Logger() repository.ILogger {
+func Logger() ILogger {
 	return &log
 }
 

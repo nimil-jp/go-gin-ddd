@@ -14,7 +14,6 @@ import (
 	"github.com/ken109/gin-jwt"
 
 	"go-gin-ddd/config"
-	"go-gin-ddd/constant"
 	"go-gin-ddd/infrastructure/email"
 	"go-gin-ddd/infrastructure/log"
 	"go-gin-ddd/infrastructure/persistence"
@@ -28,7 +27,7 @@ func Execute() {
 
 	err := jwt.SetUp(
 		jwt.Option{
-			Realm:            constant.DefaultRealm,
+			Realm:            config.DefaultRealm,
 			SigningAlgorithm: jwt.HS256,
 			SecretKey:        []byte(config.Env.App.Secret),
 		},

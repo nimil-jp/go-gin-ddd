@@ -7,7 +7,7 @@ import (
 
 	"go-gin-ddd/domain/entity"
 	"go-gin-ddd/domain/repository"
-	"go-gin-ddd/pkg/rdb"
+	"go-gin-ddd/driver/rdb"
 )
 
 type user struct{}
