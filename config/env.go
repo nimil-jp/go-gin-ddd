@@ -1,7 +1,6 @@
 package config
 
 import (
-	"encoding/json"
 	"os"
 
 	"github.com/joho/godotenv"
@@ -57,21 +56,6 @@ func init() {
 		err := godotenv.Load(dotenvPath)
 		if err != nil {
 			panic(err)
-		}
-	}
-
-	if env := os.Getenv("AWS_SECRET_ENV"); env != "" {
-		var jsonEnv map[string]string
-		err := json.Unmarshal([]byte(env), &jsonEnv)
-		if err != nil {
-			panic(err)
-		}
-
-		for k, v := range jsonEnv {
-			err = os.Setenv(k, v)
-			if err != nil {
-				panic(err)
-			}
 		}
 	}
 

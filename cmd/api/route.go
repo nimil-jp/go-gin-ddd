@@ -20,25 +20,25 @@ func post(group *gin.RouterGroup, relativePath string, handlerFunc handlerFunc) 
 	group.POST(relativePath, hf(handlerFunc))
 }
 
-func put(group *gin.RouterGroup, relativePath string, handlerFunc handlerFunc) {
-	group.PUT(relativePath, hf(handlerFunc))
-}
+// func put(group *gin.RouterGroup, relativePath string, handlerFunc handlerFunc) {
+// 	group.PUT(relativePath, hf(handlerFunc))
+// }
 
 func patch(group *gin.RouterGroup, relativePath string, handlerFunc handlerFunc) {
 	group.PATCH(relativePath, hf(handlerFunc))
 }
 
-func delete(group *gin.RouterGroup, relativePath string, handlerFunc handlerFunc) {
-	group.DELETE(relativePath, hf(handlerFunc))
-}
+// func delete(group *gin.RouterGroup, relativePath string, handlerFunc handlerFunc) {
+// 	group.DELETE(relativePath, hf(handlerFunc))
+// }
 
-func options(group *gin.RouterGroup, relativePath string, handlerFunc handlerFunc) {
-	group.OPTIONS(relativePath, hf(handlerFunc))
-}
+// func options(group *gin.RouterGroup, relativePath string, handlerFunc handlerFunc) {
+// 	group.OPTIONS(relativePath, hf(handlerFunc))
+// }
 
-func head(group *gin.RouterGroup, relativePath string, handlerFunc handlerFunc) {
-	group.HEAD(relativePath, hf(handlerFunc))
-}
+// func head(group *gin.RouterGroup, relativePath string, handlerFunc handlerFunc) {
+// 	group.HEAD(relativePath, hf(handlerFunc))
+// }
 
 func hf(handlerFunc handlerFunc) gin.HandlerFunc {
 	return func(c *gin.Context) {
