@@ -9,6 +9,8 @@ import (
 
 func dbError(err error) error {
 	switch err {
+	case nil:
+		return nil
 	case gorm.ErrRecordNotFound:
 		return xerrors.NotFound()
 	default:

@@ -1,8 +1,6 @@
 package persistence
 
 import (
-	"github.com/pkg/errors"
-
 	"go-gin-ddd/domain/entity"
 	"go-gin-ddd/domain/repository"
 	"go-gin-ddd/pkg/context"
@@ -18,7 +16,7 @@ func (u user) Create(ctx context.Context, user *entity.User) (uint, error) {
 	db := ctx.DB()
 
 	if err := db.Create(user).Error; err != nil {
-		return 0, errors.WithStack(err)
+		return 0, dbError(err)
 	}
 	return user.ID, nil
 }
@@ -48,7 +46,7 @@ func (u user) GetByRecoveryToken(ctx context.Context, recoveryToken string) (*en
 func (u user) Update(ctx context.Context, user *entity.User) error {
 	db := ctx.DB()
 
-	return db.Model(user).Updates(user).Error
+	return dbError(db.Model(user).Updates(user).Error)
 }
 
 func (u user) EmailExists(ctx context.Context, email string) (bool, error) {
@@ -56,7 +54,7 @@ func (u user) EmailExists(ctx context.Context, email string) (bool, error) {
 
 	var count int64
 	if err := db.Model(&entity.User{}).Where(&entity.User{Email: email}).Count(&count).Error; err != nil {
-		return false, errors.WithStack(err)
+		return false, dbError(err)
 	}
 	return count > 0, nil
 }
