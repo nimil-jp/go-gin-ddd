@@ -34,7 +34,7 @@ func Log(logger log.ILogger, timeFormat string, utc bool) gin.HandlerFunc {
 		var (
 			logFunc = logger.Info
 			fields  = []zap.Field{
-				zap.String("request-id", c.GetString("request-id")),
+				zap.String("request-id", c.Writer.Header().Get("X-Request-Id")),
 				zap.Int("status", c.Writer.Status()),
 				zap.String("method", c.Request.Method),
 				zap.String("path", path),

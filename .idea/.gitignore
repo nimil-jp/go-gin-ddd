@@ -6,3 +6,6 @@
 /dataSources.local.xml
 # エディターベースの HTTP クライアントリクエスト
 /httpRequests/
+
+/aws.xml
+/dataSources.xml

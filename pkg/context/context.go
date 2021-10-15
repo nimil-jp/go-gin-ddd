@@ -24,9 +24,12 @@ type ctx struct {
 	db   *gorm.DB
 }
 
-func New() Context {
+func New(requestId string) Context {
+	if requestId == "" {
+		requestId = uuid.New().String()
+	}
 	return &ctx{
-		id:   uuid.New().String(),
+		id:   requestId,
 		verr: xerrors.NewValidation(),
 	}
 }

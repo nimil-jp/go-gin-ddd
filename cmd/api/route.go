@@ -42,11 +42,10 @@ func patch(group *gin.RouterGroup, relativePath string, handlerFunc handlerFunc)
 
 func hf(handlerFunc handlerFunc) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		ctx := context.New()
+		ctx := context.New(c.GetHeader("X-Request-Id"))
+		c.Writer.Header().Add("X-Request-Id", ctx.RequestId())
 
 		err := handlerFunc(ctx, c)
-
-		c.Set("request-id", ctx.RequestId())
 
 		if err != nil {
 			switch v := err.(type) {
