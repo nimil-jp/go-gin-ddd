@@ -141,7 +141,9 @@ func (u user) Login(ctx context.Context, req *request.UserLogin) (*response.User
 	if user.PasswordIsValid(req.Password) {
 		var res response.UserLogin
 
-		res.Token, res.RefreshToken, err = jwt.IssueToken(config.DefaultRealm, jwt.Claims{})
+		res.Token, res.RefreshToken, err = jwt.IssueToken(config.DefaultRealm, jwt.Claims{
+			"user_id": user.ID,
+		})
 		if err != nil {
 			return nil, errors.WithStack(err)
 		}

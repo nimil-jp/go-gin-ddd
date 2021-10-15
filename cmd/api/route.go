@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	jwt "github.com/ken109/gin-jwt"
 	"github.com/pkg/errors"
 
 	"go-gin-ddd/pkg/context"
@@ -42,7 +43,14 @@ func patch(group *gin.RouterGroup, relativePath string, handlerFunc handlerFunc)
 
 func hf(handlerFunc handlerFunc) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		ctx := context.New(c.GetHeader("X-Request-Id"))
+		var ctx context.Context
+
+		if userId, ok := jwt.GetClaim(c, "user_id"); ok {
+			ctx = context.New(c.GetHeader("X-Request-Id"), uint(userId.(float64)))
+		} else {
+			ctx = context.New(c.GetHeader("X-Request-Id"), 0)
+		}
+
 		c.Writer.Header().Add("X-Request-Id", ctx.RequestId())
 
 		err := handlerFunc(ctx, c)

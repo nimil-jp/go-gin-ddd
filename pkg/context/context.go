@@ -9,6 +9,7 @@ import (
 
 type Context interface {
 	RequestId() string
+	UserId() uint
 
 	FieldError(fieldName string, message string)
 	IsInValid() bool
@@ -19,21 +20,27 @@ type Context interface {
 }
 
 type ctx struct {
-	id   string
-	verr *xerrors.Validation
-	db   *gorm.DB
+	id     string
+	verr   *xerrors.Validation
+	db     *gorm.DB
+	userId uint
 }
 
-func New(requestId string) Context {
+func New(requestId string, userId uint) Context {
 	if requestId == "" {
 		requestId = uuid.New().String()
 	}
 	return &ctx{
-		id:   requestId,
-		verr: xerrors.NewValidation(),
+		id:     requestId,
+		verr:   xerrors.NewValidation(),
+		userId: userId,
 	}
 }
 
 func (c ctx) RequestId() string {
 	return c.id
+}
+
+func (c ctx) UserId() uint {
+	return c.userId
 }
