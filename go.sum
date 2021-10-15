@@ -199,8 +199,8 @@ github.com/jstemmer/go-junit-report v0.0.0-20190106144839-af01ea7f8024/go.mod h1
 github.com/jstemmer/go-junit-report v0.9.1/go.mod h1:Brl9GWCQeLvo8nXZwPNNblvFj/XSXhF0NWZEnDohbsk=
 github.com/kelseyhightower/envconfig v1.4.0 h1:Im6hONhd3pLkfDFsbRgu68RDNkGF1r3dvMUtDTo2cv8=
 github.com/kelseyhightower/envconfig v1.4.0/go.mod h1:cccZRl6mQpaq41TPp5QxidR+Sa3axMbJDNb//FQX6Gg=
-github.com/ken109/gin-jwt v1.1.1 h1:0ZgL3WDA87lGdB+GKrs+NumU61Yh5GyRD66v1gAlrhA=
-github.com/ken109/gin-jwt v1.1.1/go.mod h1:uUYLb9LhF2yTutXsQIrBZaSvn2XnGN/1VXEl86JmTMw=
+github.com/ken109/gin-jwt v1.1.2 h1:Cfbq/6jPNTlNBi4F3NvEgrVwd50/qaUUScjJKsBjk+4=
+github.com/ken109/gin-jwt v1.1.2/go.mod h1:uUYLb9LhF2yTutXsQIrBZaSvn2XnGN/1VXEl86JmTMw=
 github.com/ken109/validator/v10 v10.9.1-0.20211013123912-3fec5d90da71 h1:6QrIDqtJIZMXFhMuEZsWdRiusXTBsyGuIshrOsSmN6s=
 github.com/ken109/validator/v10 v10.9.1-0.20211013123912-3fec5d90da71/go.mod h1:74x4gJWsvQexRdW8Pn3dXSGrTK4nAUsbPlLADvpJkos=
 github.com/kisielk/gotool v1.0.0/go.mod h1:XhKaO+MFFWcvkIS/tQcRk01m1F5IRFswLeQ+oQHNcck=
