@@ -11,6 +11,7 @@ type Context interface {
 	RequestId() string
 	UserId() uint
 
+	Validate(request interface{}) (ok bool)
 	FieldError(fieldName string, message string)
 	IsInValid() bool
 	ValidationError() error

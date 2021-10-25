@@ -1,5 +1,9 @@
 package context
 
+func (c *ctx) Validate(request interface{}) (ok bool) {
+	return c.verr.Validate(request)
+}
+
 func (c *ctx) FieldError(fieldName string, message string) {
 	c.verr.Add(fieldName, message)
 }

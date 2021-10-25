@@ -83,10 +83,9 @@ func (u user) ResetPasswordRequest(
 		}
 	}
 
-	var token string
 	var res response.UserResetPasswordRequest
 
-	token, res.Duration, res.Expire, err = user.ResetPasswordRequest()
+	res.Duration, res.Expire, err = user.RecoveryToken.Generate()
 	if err != nil {
 		return nil, err
 	}
@@ -98,7 +97,7 @@ func (u user) ResetPasswordRequest(
 				return err
 			}
 
-			err = u.email.Send(user.Email, "パスワードリセット", token)
+			err = u.email.Send(user.Email, "パスワードリセット", user.RecoveryToken.String())
 			if err != nil {
 				return err
 			}
@@ -138,7 +137,7 @@ func (u user) Login(ctx context.Context, req *request.UserLogin) (*response.User
 		return nil, err
 	}
 
-	if user.PasswordIsValid(req.Password) {
+	if user.Password.IsValid(req.Password) {
 		var res response.UserLogin
 
 		res.Token, res.RefreshToken, err = jwt.IssueToken(config.DefaultRealm, jwt.Claims{

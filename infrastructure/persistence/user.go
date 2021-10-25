@@ -3,6 +3,7 @@ package persistence
 import (
 	"go-gin-ddd/domain/entity"
 	"go-gin-ddd/domain/repository"
+	"go-gin-ddd/domain/vobj"
 	"go-gin-ddd/pkg/context"
 )
 
@@ -36,7 +37,7 @@ func (u user) GetByRecoveryToken(ctx context.Context, recoveryToken string) (*en
 	db := ctx.DB()
 
 	var dest entity.User
-	err := db.Where(&entity.User{RecoveryToken: &recoveryToken}).First(&dest).Error
+	err := db.Where(&entity.User{RecoveryToken: vobj.NewRecoveryToken(recoveryToken)}).First(&dest).Error
 	if err != nil {
 		return nil, dbError(err)
 	}
