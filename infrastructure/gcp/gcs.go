@@ -14,7 +14,7 @@ import (
 )
 
 type IGcs interface {
-	GetSignedUrl(dir string) (*SignedUrl, error)
+	GetSignedUrl(dir string, public bool) (*SignedUrl, error)
 	Delete(key string) error
 }
 
@@ -25,11 +25,12 @@ func NewGcs() IGcs {
 }
 
 type SignedUrl struct {
-	Key string `json:"key"`
-	URL string `json:"url"`
+	Key    string `json:"key"`
+	URL    string `json:"url"`
+	Public bool   `json:"public"`
 }
 
-func (gcs) GetSignedUrl(dir string) (*SignedUrl, error) {
+func (gcs) GetSignedUrl(dir string, public bool) (*SignedUrl, error) {
 	key, err := uuid.NewRandom()
 	if err != nil {
 		return nil, err
@@ -37,11 +38,17 @@ func (gcs) GetSignedUrl(dir string) (*SignedUrl, error) {
 
 	keyString := fmt.Sprintf("%s/%s", dir, key.String())
 
+	var headers []string
+	if public {
+		headers = append(headers, "x-goog-acl:public-read")
+	}
+
 	url, err := storage.SignedURL(config.Env.Gcp.Bucket, keyString, &storage.SignedURLOptions{
 		GoogleAccessID: gcp.Conf().Email,
 		PrivateKey:     gcp.Conf().PrivateKey,
 		Method:         http.MethodPut,
-		Expires:        time.Now().Add(time.Minute * 1),
+		Expires:        time.Now().Add(config.SignedUrlDuration),
+		Headers:        headers,
 	})
 
 	return &SignedUrl{
