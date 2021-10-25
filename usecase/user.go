@@ -97,7 +97,10 @@ func (u user) ResetPasswordRequest(
 				return err
 			}
 
-			err = u.email.Send(user.Email, "パスワードリセット", user.RecoveryToken.String())
+			err = u.email.Send(user.Email, emailInfra.UserResetPasswordRequest{
+				Url:   config.Env.App.URL,
+				Token: user.RecoveryToken.String(),
+			})
 			if err != nil {
 				return err
 			}

@@ -1,6 +1,7 @@
 package email
 
 import (
+	_ "embed"
 	"strconv"
 
 	"gopkg.in/gomail.v2"
@@ -8,8 +9,14 @@ import (
 	"go-gin-ddd/config"
 )
 
+type Body interface {
+	Subject() string
+	Html() (string, error)
+	Plain() (string, error)
+}
+
 type IEmail interface {
-	Send(to string, subject string, body string) error
+	Send(to string, body Body) error
 }
 
 type email struct{}
@@ -18,18 +25,26 @@ func New() IEmail {
 	return &email{}
 }
 
-func (e email) Send(to string, subject string, body string) error {
+func (e email) Send(to string, body Body) error {
 	m := gomail.NewMessage()
 
-	m.SetBody("text/html", body)
+	html, err := body.Html()
+	if err != nil {
+		return err
+	}
+	m.SetBody("text/html", html)
 
-	m.AddAlternative("text/plain", body)
+	plain, err := body.Plain()
+	if err != nil {
+		return err
+	}
+	m.AddAlternative("text/plain", plain)
 
 	m.SetHeaders(
 		map[string][]string{
 			"From":    {m.FormatAddress(config.Env.Mail.From, config.Env.Mail.Name)},
 			"To":      {to},
-			"Subject": {subject},
+			"Subject": {body.Subject()},
 		},
 	)
 
