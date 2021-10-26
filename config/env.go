@@ -12,30 +12,30 @@ var Env EnvType
 type EnvType struct {
 	Port string `default:"8080"`
 	App  struct {
-		Secret string
-		URL    string
+		Secret string `required:"true"`
+		URL    string `required:"true"`
 	}
 	DB struct {
 		Socket   string
 		Host     string
 		Port     uint
-		User     string
-		Password string
-		Name     string
+		User     string `required:"true"`
+		Password string `required:"true"`
+		Name     string `required:"true"`
 	}
 	Smtp struct {
-		Host     string
-		Port     string
-		User     string
-		Password string
+		Host     string `required:"true"`
+		Port     string `required:"true"`
+		User     string `required:"true"`
+		Password string `required:"true"`
 	}
 	Mail struct {
-		From string
-		Name string
+		From string `required:"true"`
+		Name string `required:"true"`
 	}
 	Gcp struct {
-		CredentialPath string `split_words:"true"`
-		Bucket         string
+		CredentialPath string `required:"true" split_words:"true"`
+		Bucket         string `required:"true"`
 	}
 }
 
