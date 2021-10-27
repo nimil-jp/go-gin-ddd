@@ -9,14 +9,14 @@ import (
 )
 
 func htmlToPlain(body Body) (string, error) {
-	html, err := body.Html()
+	html, err := body.HTML()
 	if err != nil {
 		return "", err
 	}
 	return html2text.FromString(html)
 }
 
-func setHtmlTemplate(template *templateHtml.Template, data interface{}) (string, error) {
+func setHTMLTemplate(template *templateHtml.Template, data interface{}) (string, error) {
 	var out bytes.Buffer
 	err := template.Execute(&out, data)
 	if err != nil {

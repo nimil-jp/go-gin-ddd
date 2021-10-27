@@ -6,12 +6,12 @@ import (
 )
 
 //go:embed template/default.gohtml
-var defaultHtmlTemplateString string
-var defaultHtmlTemplate *template.Template
+var defaultHTMLTemplateString string
+var defaultHTMLTemplate *template.Template
 
 func init() {
 	var err error
-	defaultHtmlTemplate, err = template.New("defaultHtml").Parse(defaultHtmlTemplateString)
+	defaultHTMLTemplate, err = template.New("defaultHtml").Parse(defaultHTMLTemplateString)
 	if err != nil {
 		panic(err)
 	}
@@ -26,8 +26,8 @@ func (d DefaultBody) Subject() string {
 	return d.Title
 }
 
-func (d DefaultBody) Html() (string, error) {
-	return setHtmlTemplate(defaultHtmlTemplate, d)
+func (d DefaultBody) HTML() (string, error) {
+	return setHTMLTemplate(defaultHTMLTemplate, d)
 }
 
 func (d DefaultBody) Plain() (string, error) {

@@ -45,13 +45,13 @@ func hf(handlerFunc handlerFunc) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var ctx context.Context
 
-		if userId, ok := jwt.GetClaim(c, "user_id"); ok {
-			ctx = context.New(c.GetHeader("X-Request-Id"), uint(userId.(float64)))
+		if userID, ok := jwt.GetClaim(c, "user_id"); ok {
+			ctx = context.New(c.GetHeader("X-Request-Id"), uint(userID.(float64)))
 		} else {
 			ctx = context.New(c.GetHeader("X-Request-Id"), 0)
 		}
 
-		c.Writer.Header().Add("X-Request-Id", ctx.RequestId())
+		c.Writer.Header().Add("X-Request-Id", ctx.RequestID())
 
 		err := handlerFunc(ctx, c)
 
@@ -67,9 +67,9 @@ func hf(handlerFunc handlerFunc) gin.HandlerFunc {
 				c.JSON(http.StatusBadRequest, v)
 			default:
 				if gin.Mode() == gin.DebugMode {
-					c.JSONP(http.StatusInternalServerError, map[string]string{"request_id": ctx.RequestId(), "error": v.Error()})
+					c.JSONP(http.StatusInternalServerError, map[string]string{"request_id": ctx.RequestID(), "error": v.Error()})
 				} else {
-					c.JSONP(http.StatusInternalServerError, map[string]string{"request_id": ctx.RequestId()})
+					c.JSONP(http.StatusInternalServerError, map[string]string{"request_id": ctx.RequestID()})
 				}
 			}
 

@@ -8,8 +8,8 @@ import (
 )
 
 type Context interface {
-	RequestId() string
-	UserId() uint
+	RequestID() string
+	UserID() uint
 
 	Validate(request interface{}) (ok bool)
 	FieldError(fieldName string, message string)
@@ -24,24 +24,24 @@ type ctx struct {
 	id     string
 	verr   *xerrors.Validation
 	db     *gorm.DB
-	userId uint
+	userID uint
 }
 
-func New(requestId string, userId uint) Context {
-	if requestId == "" {
-		requestId = uuid.New().String()
+func New(requestID string, userID uint) Context {
+	if requestID == "" {
+		requestID = uuid.New().String()
 	}
 	return &ctx{
-		id:     requestId,
+		id:     requestID,
 		verr:   xerrors.NewValidation(),
-		userId: userId,
+		userID: userID,
 	}
 }
 
-func (c ctx) RequestId() string {
+func (c ctx) RequestID() string {
 	return c.id
 }
 
-func (c ctx) UserId() uint {
-	return c.userId
+func (c ctx) UserID() uint {
+	return c.userID
 }

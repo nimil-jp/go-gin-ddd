@@ -33,7 +33,7 @@ func (p *RecoveryToken) Generate() (time.Duration, time.Time, error) {
 }
 
 func (p RecoveryToken) IsValid() bool {
-	decrypted, err := crypto.DecryptCTR(string(p), config.Env.App.Secret)
+	decrypted, _ := crypto.DecryptCTR(string(p), config.Env.App.Secret)
 	expire, err := time.Parse(time.RFC3339, decrypted)
 	return !(err != nil || time.Now().After(expire))
 }

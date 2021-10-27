@@ -23,7 +23,7 @@ type EnvType struct {
 		Password string `required:"true"`
 		Name     string `required:"true"`
 	}
-	Smtp struct {
+	SMTP struct {
 		Host     string `required:"true"`
 		Port     string `required:"true"`
 		User     string `required:"true"`

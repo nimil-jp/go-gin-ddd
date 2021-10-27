@@ -14,7 +14,7 @@ import (
 )
 
 type IGcs interface {
-	GetSignedUrl(dir string, public bool) (*SignedUrl, error)
+	GetSignedURL(dir string, public bool) (*SignedURL, error)
 	Delete(key string) error
 }
 
@@ -24,13 +24,13 @@ func NewGcs() IGcs {
 	return gcs{}
 }
 
-type SignedUrl struct {
+type SignedURL struct {
 	Key    string `json:"key"`
 	URL    string `json:"url"`
 	Public bool   `json:"public"`
 }
 
-func (gcs) GetSignedUrl(dir string, public bool) (*SignedUrl, error) {
+func (gcs) GetSignedURL(dir string, public bool) (*SignedURL, error) {
 	key, err := uuid.NewRandom()
 	if err != nil {
 		return nil, err
@@ -47,11 +47,14 @@ func (gcs) GetSignedUrl(dir string, public bool) (*SignedUrl, error) {
 		GoogleAccessID: gcp.Conf().Email,
 		PrivateKey:     gcp.Conf().PrivateKey,
 		Method:         http.MethodPut,
-		Expires:        time.Now().Add(config.SignedUrlDuration),
+		Expires:        time.Now().Add(config.SignedURLDuration),
 		Headers:        headers,
 	})
+	if err != nil {
+		return nil, err
+	}
 
-	return &SignedUrl{
+	return &SignedURL{
 		Key: keyString,
 		URL: url,
 	}, nil

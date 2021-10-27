@@ -11,7 +11,7 @@ import (
 
 type Body interface {
 	Subject() string
-	Html() (string, error)
+	HTML() (string, error)
 	Plain() (string, error)
 }
 
@@ -28,7 +28,7 @@ func New() IEmail {
 func (e email) Send(to string, body Body) error {
 	m := gomail.NewMessage()
 
-	html, err := body.Html()
+	html, err := body.HTML()
 	if err != nil {
 		return err
 	}
@@ -48,12 +48,12 @@ func (e email) Send(to string, body Body) error {
 		},
 	)
 
-	port, err := strconv.Atoi(config.Env.Smtp.Port)
+	port, err := strconv.Atoi(config.Env.SMTP.Port)
 	if err != nil {
 		return err
 	}
 
-	d := gomail.NewDialer(config.Env.Smtp.Host, port, config.Env.Smtp.User, config.Env.Smtp.Password)
+	d := gomail.NewDialer(config.Env.SMTP.Host, port, config.Env.SMTP.User, config.Env.SMTP.Password)
 
 	if err = d.DialAndSend(m); err != nil {
 		return err

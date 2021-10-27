@@ -2,4 +2,4 @@ package config
 
 import "time"
 
-const SignedUrlDuration = time.Minute * 1
+const SignedURLDuration = time.Minute * 1
