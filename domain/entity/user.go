@@ -1,9 +1,10 @@
 package entity
 
 import (
+	"github.com/nimil-jp/gin-utils/context"
+
 	"go-gin-ddd/domain"
 	"go-gin-ddd/domain/vobj"
-	"go-gin-ddd/pkg/context"
 	"go-gin-ddd/resource/request"
 )
 

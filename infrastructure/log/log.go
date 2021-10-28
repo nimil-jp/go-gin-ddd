@@ -52,6 +52,10 @@ func Logger() ILogger {
 	return &log
 }
 
+func ZapLogger() *zap.Logger {
+	return log.zapLog
+}
+
 func (l *logger) Sync() {
 	_ = l.zapLog.Sync()
 }

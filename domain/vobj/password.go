@@ -9,8 +9,9 @@ import (
 	"gorm.io/gorm"
 	"gorm.io/gorm/schema"
 
+	"github.com/nimil-jp/gin-utils/context"
+
 	"go-gin-ddd/config"
-	"go-gin-ddd/pkg/context"
 )
 
 type Password string

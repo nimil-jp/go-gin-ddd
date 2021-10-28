@@ -5,7 +5,8 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	"go-gin-ddd/pkg/context"
+	"github.com/nimil-jp/gin-utils/context"
+
 	"go-gin-ddd/resource/request"
 	"go-gin-ddd/usecase"
 )

@@ -12,13 +12,15 @@ import (
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/ken109/gin-jwt"
+	"github.com/nimil-jp/gin-utils/http/middleware"
+	"github.com/nimil-jp/gin-utils/http/router"
 
 	"go-gin-ddd/config"
+	"go-gin-ddd/driver/rdb"
 	"go-gin-ddd/infrastructure/email"
 	"go-gin-ddd/infrastructure/log"
 	"go-gin-ddd/infrastructure/persistence"
 	"go-gin-ddd/interface/handler"
-	"go-gin-ddd/interface/middleware"
 	"go-gin-ddd/usecase"
 )
 
@@ -41,8 +43,8 @@ func Execute() {
 
 	engine.GET("health", func(c *gin.Context) { c.Status(http.StatusOK) })
 
-	engine.Use(middleware.Log(logger, time.RFC3339, false))
-	engine.Use(middleware.RecoveryWithLog(logger, true))
+	engine.Use(middleware.Log(log.ZapLogger(), time.RFC3339, false))
+	engine.Use(middleware.RecoveryWithLog(log.ZapLogger(), true))
 
 	// cors
 	engine.Use(
@@ -72,15 +74,16 @@ func Execute() {
 	// ----- handler -----
 	userHandler := handler.NewUser(userUseCase)
 
+	r := router.New(engine, rdb.Get)
+
 	// routes
-	{
-		user := engine.Group("user")
-		post(user, "", userHandler.Create)
-		post(user, "login", userHandler.Login)
-		get(user, "refresh-token", userHandler.RefreshToken)
-		patch(user, "reset-password-request", userHandler.ResetPasswordRequest)
-		patch(user, "reset-password", userHandler.ResetPassword)
-	}
+	r.Group("user", nil, func(r *router.Router) {
+		r.Post("", userHandler.Create)
+		r.Post("login", userHandler.Login)
+		r.Get("refresh-token", userHandler.RefreshToken)
+		r.Patch("reset-password-request", userHandler.ResetPasswordRequest)
+		r.Patch("reset-password", userHandler.ResetPassword)
+	})
 
 	logger.Info("Succeeded in setting up routes.")
 

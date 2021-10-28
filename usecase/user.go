@@ -6,12 +6,13 @@ import (
 	jwt "github.com/ken109/gin-jwt"
 	"github.com/pkg/errors"
 
+	"github.com/nimil-jp/gin-utils/context"
+	"github.com/nimil-jp/gin-utils/xerrors"
+
 	"go-gin-ddd/config"
 	"go-gin-ddd/domain/entity"
 	"go-gin-ddd/domain/repository"
 	emailInfra "go-gin-ddd/infrastructure/email"
-	"go-gin-ddd/pkg/context"
-	"go-gin-ddd/pkg/xerrors"
 	"go-gin-ddd/resource/request"
 	"go-gin-ddd/resource/response"
 )

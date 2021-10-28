@@ -1,8 +1,9 @@
 package repository
 
 import (
+	"github.com/nimil-jp/gin-utils/context"
+
 	"go-gin-ddd/domain/entity"
-	"go-gin-ddd/pkg/context"
 )
 
 type IUser interface {

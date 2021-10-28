@@ -4,7 +4,7 @@ import (
 	"github.com/pkg/errors"
 	"gorm.io/gorm"
 
-	"go-gin-ddd/pkg/xerrors"
+	"github.com/nimil-jp/gin-utils/xerrors"
 )
 
 func dbError(err error) error {
