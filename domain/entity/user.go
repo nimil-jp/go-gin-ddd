@@ -11,7 +11,7 @@ import (
 type User struct {
 	domain.SoftDeleteModel
 	Email    string        `json:"email" gorm:"index;unique"`
-	Password vobj.Password `json:"password"`
+	Password vobj.Password `json:"-"`
 
 	RecoveryToken *vobj.RecoveryToken `json:"-" gorm:"index;unique"`
 }
