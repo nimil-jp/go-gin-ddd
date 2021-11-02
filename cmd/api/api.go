@@ -46,10 +46,10 @@ func Execute() {
 	engine.Use(middleware.RecoveryWithLog(log.ZapLogger(), true))
 
 	// cors
-	engine.Use(middleware.Cors())
+	engine.Use(middleware.Cors(nil))
 
 	// cookie
-	engine.Use(middleware.Session(config.UserSession, config.Env.App.Secret))
+	engine.Use(middleware.Session(config.UserSession, config.Env.App.Secret, nil))
 
 	// dependencies injection
 	// ----- infrastructure -----
