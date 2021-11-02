@@ -264,8 +264,8 @@ github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd/go.mod h1:6dJ
 github.com/modern-go/reflect2 v0.0.0-20180701023420-4b7aa43c6742/go.mod h1:bx2lNnkwVCuqBIxFjflWJWanXIb3RllmbCylyMrvgv0=
 github.com/modern-go/reflect2 v1.0.1 h1:9f412s+6RmYXLWZSEzVVgPGK7C2PphHj5RJrvfx9AWI=
 github.com/modern-go/reflect2 v1.0.1/go.mod h1:bx2lNnkwVCuqBIxFjflWJWanXIb3RllmbCylyMrvgv0=
-github.com/nimil-jp/gin-utils v0.0.3 h1:0kJdbTj4yfwgU8O5uSfLuFoQP4Iqm/GNC4JfXR46LEQ=
-github.com/nimil-jp/gin-utils v0.0.3/go.mod h1:GVmI+Y4hNcH/2Ns5KuH/bgxSRTQ5SuYQOvEjXOX9CfY=
+github.com/nimil-jp/gin-utils v0.0.4 h1:3/6zdIgHwDa8xkyJ6/fPq9Tc7stcqvSeWIdd5dfUc5o=
+github.com/nimil-jp/gin-utils v0.0.4/go.mod h1:PwM9CD+ZpEtsvW7NMcjefnW4t1SSdD4IwnrExiS79EI=
 github.com/noknow-hub/go_crypto v0.0.0-20190921184517-be89dab92b85 h1:LkPzHu8gqhjoKckWq+HJs5Fguc43BY9jBqhYqQf0ePs=
 github.com/noknow-hub/go_crypto v0.0.0-20190921184517-be89dab92b85/go.mod h1:KZyTEMuHRJ00uI/EtItkeyxYoFM23OSM4mc1T07QQJw=
 github.com/olekukonko/tablewriter v0.0.5 h1:P2Ga83D34wi1o9J6Wh1mRuqd4mF/x/lgBS7N7AbDhec=

@@ -9,9 +9,6 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/gin-contrib/cors"
-	"github.com/gin-contrib/sessions"
-	"github.com/gin-contrib/sessions/cookie"
 	"github.com/gin-gonic/gin"
 	"github.com/ken109/gin-jwt"
 	"github.com/nimil-jp/gin-utils/http/middleware"
@@ -23,7 +20,6 @@ import (
 	"go-gin-ddd/infrastructure/log"
 	"go-gin-ddd/infrastructure/persistence"
 	"go-gin-ddd/interface/handler"
-	middle "go-gin-ddd/interface/middleware"
 	"go-gin-ddd/usecase"
 )
 
@@ -50,46 +46,10 @@ func Execute() {
 	engine.Use(middleware.RecoveryWithLog(log.ZapLogger(), true))
 
 	// cors
-	engine.Use(
-		cors.New(
-			cors.Config{
-				AllowOriginFunc: func(origin string) bool {
-					return true
-				},
-				AllowHeaders:     []string{"Origin", "Content-Length", "Content-Type", "X-Request-Id"},
-				AllowMethods:     []string{"GET", "POST", "PUT", "PATCH", "DELETE", "HEAD"},
-				AllowCredentials: true,
-				MaxAge:           12 * time.Hour,
-			},
-		),
-	)
+	engine.Use(middleware.Cors())
 
 	// cookie
-	var (
-		corsSecure   bool
-		corsSameSite http.SameSite
-	)
-
-	switch gin.Mode() {
-	case gin.ReleaseMode:
-		corsSecure = true
-		corsSameSite = http.SameSiteStrictMode
-	case gin.DebugMode:
-		corsSecure = false
-		corsSameSite = http.SameSiteLaxMode
-	}
-
-	store := cookie.NewStore([]byte(config.Env.App.Secret))
-	store.Options(
-		sessions.Options{
-			Path:     "/",
-			MaxAge:   60 * 60 * 24 * 365,
-			Secure:   corsSecure,
-			HttpOnly: true,
-			SameSite: corsSameSite,
-		},
-	)
-	engine.Use(sessions.Sessions(config.UserSession, store))
+	engine.Use(middleware.Session(config.UserSession, config.Env.App.Secret))
 
 	// dependencies injection
 	// ----- infrastructure -----
@@ -115,7 +75,7 @@ func Execute() {
 		r.Patch("reset-password", userHandler.ResetPassword)
 	})
 
-	r.Group("", []gin.HandlerFunc{middle.Authentication}, func(r *router.Router) {
+	r.Group("", []gin.HandlerFunc{middleware.Authentication(config.DefaultRealm)}, func(r *router.Router) {
 		r.Group("user", nil, func(r *router.Router) {
 			r.Get("me", userHandler.GetMe)
 		})
