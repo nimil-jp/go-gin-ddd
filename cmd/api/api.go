@@ -83,7 +83,7 @@ func Execute() {
 	store.Options(
 		sessions.Options{
 			Path:     "/",
-			MaxAge:   60 * 60 * 2,
+			MaxAge:   60 * 60 * 24 * 365,
 			Secure:   corsSecure,
 			HttpOnly: true,
 			SameSite: corsSameSite,
@@ -110,7 +110,7 @@ func Execute() {
 	r.Group("user", nil, func(r *router.Router) {
 		r.Post("", userHandler.Create)
 		r.Post("login", userHandler.Login)
-		r.Get("refresh-token", userHandler.RefreshToken)
+		r.Post("refresh-token", userHandler.RefreshToken)
 		r.Patch("reset-password-request", userHandler.ResetPasswordRequest)
 		r.Patch("reset-password", userHandler.ResetPassword)
 	})

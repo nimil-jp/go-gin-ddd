@@ -90,6 +90,7 @@ func (u User) Login(ctx context.Context, c *gin.Context) error {
 	if req.Session {
 		session := sessions.Default(c)
 		session.Set("token", res.Token)
+		session.Set("refresh_token", res.RefreshToken)
 		if err = session.Save(); err != nil {
 			return err
 		}
@@ -102,7 +103,13 @@ func (u User) Login(ctx context.Context, c *gin.Context) error {
 }
 
 func (u User) RefreshToken(_ context.Context, c *gin.Context) error {
-	res, err := u.userUseCase.RefreshToken(c.Query("refresh_token"))
+	var req request.UserRefreshToken
+
+	if !bind(c, &req) {
+		return nil
+	}
+
+	res, err := u.userUseCase.RefreshToken(req.RefreshToken)
 	if err != nil {
 		return err
 	}
@@ -112,7 +119,18 @@ func (u User) RefreshToken(_ context.Context, c *gin.Context) error {
 		return nil
 	}
 
-	c.JSON(http.StatusOK, res)
+	if req.Session {
+		session := sessions.Default(c)
+		session.Set("token", res.Token)
+		session.Set("refresh_token", res.RefreshToken)
+		if err = session.Save(); err != nil {
+			return err
+		}
+		c.Status(http.StatusOK)
+	} else {
+		c.JSON(http.StatusOK, res)
+	}
+
 	return nil
 }
 

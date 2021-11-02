@@ -1,259 +1,291 @@
 {
-  "info": {
-    "_postman_id": "7b0f513e-128e-4118-b999-334927853f01",
-    "name": "Go DDD",
-    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
-  },
-  "item": [
-    {
-      "name": "User",
-      "item": [
-        {
-          "name": "Create",
-          "request": {
-            "method": "POST",
-            "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n    \"email\": \"{{email}}\",\n    \"password\": \"{{password}}\",\n    \"password_confirm\": \"{{password}}\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{base}}/user",
-              "host": [
-                "{{base}}"
-              ],
-              "path": [
-                "user"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Login",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "var res = pm.response.json()",
-                  "",
-                  "pm.collectionVariables.set(\"token\", res[\"token\"])",
-                  "pm.collectionVariables.set(\"refresh_token\", res[\"refresh_token\"])",
-                  ""
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ],
-          "request": {
-            "method": "POST",
-            "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n    \"email\": \"{{email}}\",\n    \"password\": \"{{password}}\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{base}}/user/login",
-              "host": [
-                "{{base}}"
-              ],
-              "path": [
-                "user",
-                "login"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "RefreshToken",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "var res = pm.response.json()",
-                  "",
-                  "pm.collectionVariables.set(\"token\", res[\"token\"])",
-                  "pm.collectionVariables.set(\"refresh_token\", res[\"refresh_token\"])",
-                  ""
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ],
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{base}}/user/refresh-token?refresh_token={{refresh_token}}",
-              "host": [
-                "{{base}}"
-              ],
-              "path": [
-                "user",
-                "refresh-token"
-              ],
-              "query": [
-                {
-                  "key": "refresh_token",
-                  "value": "{{refresh_token}}"
-                }
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "ResetPasswordRequest",
-          "request": {
-            "method": "PATCH",
-            "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n    \"email\": \"{{email}}\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{base}}/user/reset-password-request",
-              "host": [
-                "{{base}}"
-              ],
-              "path": [
-                "user",
-                "reset-password-request"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "ResetPassword",
-          "request": {
-            "method": "PATCH",
-            "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n    \"recovery_token\": \"{{recovery_token}}\",\n    \"password\": \"{{password}}\",\n    \"password_confirm\": \"{{password}}\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{base}}/user/reset-password",
-              "host": [
-                "{{base}}"
-              ],
-              "path": [
-                "user",
-                "reset-password"
-              ]
-            }
-          },
-          "response": []
-        }
-      ]
-    },
-    {
-      "name": "Health",
-      "request": {
-        "method": "GET",
-        "header": [],
-        "url": {
-          "raw": "{{base}}/health",
-          "host": [
-            "{{base}}"
-          ],
-          "path": [
-            "health"
-          ]
-        }
-      },
-      "response": []
-    }
-  ],
-  "auth": {
-    "type": "bearer",
-    "bearer": [
-      {
-        "key": "token",
-        "value": "{{token}}",
-        "type": "string"
-      }
-    ]
-  },
-  "event": [
-    {
-      "listen": "prerequest",
-      "script": {
-        "type": "text/javascript",
-        "exec": [
-          "let url = pm.collectionVariables.get(\"base\")",
-          "let refresh_token = pm.collectionVariables.get(\"refresh_token\")",
-          "",
-          "if (url && refresh_token) {",
-          "    pm.sendRequest(",
-          "        `${url}/user/refresh-token?refresh_token=${refresh_token}`, ",
-          "        (err, res) => {",
-          "            pm.collectionVariables.set(\"token\", res.json()[\"token\"])",
-          "            pm.collectionVariables.set(\"refresh_token\", res.json()[\"refresh_token\"])",
-          "        }",
-          "    );",
-          "}"
-        ]
-      }
-    },
-    {
-      "listen": "test",
-      "script": {
-        "type": "text/javascript",
-        "exec": [
-          ""
-        ]
-      }
-    }
-  ],
-  "variable": [
-    {
-      "key": "base",
-      "value": "http://localhost:8080"
-    },
-    {
-      "key": "email",
-      "value": ""
-    },
-    {
-      "key": "password",
-      "value": ""
-    },
-    {
-      "key": "token",
-      "value": ""
-    },
-    {
-      "key": "refresh_token",
-      "value": ""
-    },
-    {
-      "key": "recovery_token",
-      "value": ""
-    }
-  ]
+	"info": {
+		"_postman_id": "7b0f513e-128e-4118-b999-334927853f01",
+		"name": "Go DDD",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "User",
+			"item": [
+				{
+					"name": "Create",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"{{email}}\",\n    \"password\": \"{{password}}\",\n    \"password_confirm\": \"{{password}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base}}/user",
+							"host": [
+								"{{base}}"
+							],
+							"path": [
+								"user"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (!JSON.parse(pm.request.body.raw).session) {",
+									"    var res = pm.response.json()",
+									"",
+									"    pm.collectionVariables.set(\"token\", res[\"token\"])",
+									"    pm.collectionVariables.set(\"refresh_token\", res[\"refresh_token\"])",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"session\": true,\n    \"email\": \"{{email}}\",\n    \"password\": \"{{password}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base}}/user/login",
+							"host": [
+								"{{base}}"
+							],
+							"path": [
+								"user",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "RefreshToken",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (!JSON.parse(pm.request.body.raw).session) {",
+									"    var res = pm.response.json()",
+									"",
+									"    pm.collectionVariables.set(\"token\", res[\"token\"])",
+									"    pm.collectionVariables.set(\"refresh_token\", res[\"refresh_token\"])",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"session\": true,\n    \"refresh_token\": \"{{refresh_token}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base}}/user/refresh-token",
+							"host": [
+								"{{base}}"
+							],
+							"path": [
+								"user",
+								"refresh-token"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ResetPasswordRequest",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"{{email}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base}}/user/reset-password-request",
+							"host": [
+								"{{base}}"
+							],
+							"path": [
+								"user",
+								"reset-password-request"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ResetPassword",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"recovery_token\": \"{{recovery_token}}\",\n    \"password\": \"{{password}}\",\n    \"password_confirm\": \"{{password}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base}}/user/reset-password",
+							"host": [
+								"{{base}}"
+							],
+							"path": [
+								"user",
+								"reset-password"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Me",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base}}/user/me",
+							"host": [
+								"{{base}}"
+							],
+							"path": [
+								"user",
+								"me"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Health",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base}}/health",
+					"host": [
+						"{{base}}"
+					],
+					"path": [
+						"health"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{token}}",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					"let url = pm.collectionVariables.get(\"base\")",
+					"let refresh_token = pm.collectionVariables.get(\"refresh_token\")",
+					"",
+					"if (url && refresh_token) {",
+					"    pm.sendRequest(",
+					"        {",
+					"            url: `${url}/user/refresh-token`,",
+					"            method: \"POST\",",
+					"            body: {",
+					"                mode: \"raw\",",
+					"                raw: {",
+					"                    refresh_token",
+					"                }",
+					"            }",
+					"        }, ",
+					"        (err, res) => {",
+					"            pm.collectionVariables.set(\"token\", res.json()[\"token\"])",
+					"            pm.collectionVariables.set(\"refresh_token\", res.json()[\"refresh_token\"])",
+					"        }",
+					"    );",
+					"}"
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "base",
+			"value": "http://localhost:8080"
+		},
+		{
+			"key": "email",
+			"value": ""
+		},
+		{
+			"key": "password",
+			"value": ""
+		},
+		{
+			"key": "token",
+			"value": ""
+		},
+		{
+			"key": "refresh_token",
+			"value": ""
+		},
+		{
+			"key": "recovery_token",
+			"value": ""
+		}
+	]
 }

@@ -12,6 +12,11 @@ type UserLogin struct {
 	Password string `json:"password"`
 }
 
+type UserRefreshToken struct {
+	Session      bool   `json:"session"`
+	RefreshToken string `json:"refresh_token"`
+}
+
 type UserResetPasswordRequest struct {
 	Email string `json:"email"`
 }
