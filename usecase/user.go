@@ -27,6 +27,8 @@ type IUser interface {
 	ResetPassword(ctx context.Context, req *request.UserResetPassword) error
 	Login(ctx context.Context, req *request.UserLogin) (*response.UserLogin, error)
 	RefreshToken(refreshToken string) (*response.UserLogin, error)
+
+	GetByID(ctx context.Context, id uint) (*entity.User, error)
 }
 
 type user struct {
@@ -171,4 +173,8 @@ func (u user) RefreshToken(refreshToken string) (*response.UserLogin, error) {
 		return nil, nil
 	}
 	return &res, nil
+}
+
+func (u user) GetByID(ctx context.Context, id uint) (*entity.User, error) {
+	return u.userRepo.GetByID(ctx, id)
 }

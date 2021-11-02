@@ -23,6 +23,17 @@ func (u user) Create(ctx context.Context, user *entity.User) (uint, error) {
 	return user.ID, nil
 }
 
+func (u user) GetByID(ctx context.Context, id uint) (*entity.User, error) {
+	db := ctx.DB()
+
+	var user entity.User
+	err := db.First(&user, id).Error
+	if err != nil {
+		return nil, dbError(err)
+	}
+	return &user, nil
+}
+
 func (u user) GetByEmail(ctx context.Context, email string) (*entity.User, error) {
 	db := ctx.DB()
 

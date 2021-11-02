@@ -3,6 +3,7 @@ package handler
 import (
 	"net/http"
 
+	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 
 	"github.com/nimil-jp/gin-utils/context"
@@ -86,7 +87,17 @@ func (u User) Login(ctx context.Context, c *gin.Context) error {
 		return nil
 	}
 
-	c.JSON(http.StatusOK, res)
+	if req.Session {
+		session := sessions.Default(c)
+		session.Set("token", res.Token)
+		if err = session.Save(); err != nil {
+			return err
+		}
+		c.Status(http.StatusOK)
+	} else {
+		c.JSON(http.StatusOK, res)
+	}
+
 	return nil
 }
 
@@ -102,5 +113,15 @@ func (u User) RefreshToken(_ context.Context, c *gin.Context) error {
 	}
 
 	c.JSON(http.StatusOK, res)
+	return nil
+}
+
+func (u User) GetMe(ctx context.Context, c *gin.Context) error {
+	user, err := u.userUseCase.GetByID(ctx, ctx.UserID())
+	if err != nil {
+		return err
+	}
+
+	c.JSONP(http.StatusOK, user)
 	return nil
 }

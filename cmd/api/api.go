@@ -10,6 +10,8 @@ import (
 	"time"
 
 	"github.com/gin-contrib/cors"
+	"github.com/gin-contrib/sessions"
+	"github.com/gin-contrib/sessions/cookie"
 	"github.com/gin-gonic/gin"
 	"github.com/ken109/gin-jwt"
 	"github.com/nimil-jp/gin-utils/http/middleware"
@@ -21,6 +23,7 @@ import (
 	"go-gin-ddd/infrastructure/log"
 	"go-gin-ddd/infrastructure/persistence"
 	"go-gin-ddd/interface/handler"
+	middle "go-gin-ddd/interface/middleware"
 	"go-gin-ddd/usecase"
 )
 
@@ -61,6 +64,33 @@ func Execute() {
 		),
 	)
 
+	// cookie
+	var (
+		corsSecure   bool
+		corsSameSite http.SameSite
+	)
+
+	switch gin.Mode() {
+	case gin.ReleaseMode:
+		corsSecure = true
+		corsSameSite = http.SameSiteNoneMode
+	case gin.DebugMode:
+		corsSecure = false
+		corsSameSite = http.SameSiteLaxMode
+	}
+
+	store := cookie.NewStore([]byte(config.Env.App.Secret))
+	store.Options(
+		sessions.Options{
+			Path:     "/",
+			MaxAge:   60 * 60 * 2,
+			Secure:   corsSecure,
+			HttpOnly: true,
+			SameSite: corsSameSite,
+		},
+	)
+	engine.Use(sessions.Sessions(config.UserSession, store))
+
 	// dependencies injection
 	// ----- infrastructure -----
 	emailDriver := email.New()
@@ -83,6 +113,12 @@ func Execute() {
 		r.Get("refresh-token", userHandler.RefreshToken)
 		r.Patch("reset-password-request", userHandler.ResetPasswordRequest)
 		r.Patch("reset-password", userHandler.ResetPassword)
+	})
+
+	r.Group("", []gin.HandlerFunc{middle.Authentication}, func(r *router.Router) {
+		r.Group("user", nil, func(r *router.Router) {
+			r.Get("me", userHandler.GetMe)
+		})
 	})
 
 	logger.Info("Succeeded in setting up routes.")
