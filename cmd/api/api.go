@@ -73,7 +73,7 @@ func Execute() {
 	switch gin.Mode() {
 	case gin.ReleaseMode:
 		corsSecure = true
-		corsSameSite = http.SameSiteNoneMode
+		corsSameSite = http.SameSiteStrictMode
 	case gin.DebugMode:
 		corsSecure = false
 		corsSameSite = http.SameSiteLaxMode
