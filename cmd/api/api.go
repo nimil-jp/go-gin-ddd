@@ -49,7 +49,7 @@ func Execute() {
 	engine.Use(middleware.Cors(nil))
 
 	// cookie
-	engine.Use(middleware.Session(config.UserSession, config.Env.App.Secret, nil))
+	engine.Use(middleware.Session([]string{config.UserSession}, config.Env.App.Secret, nil))
 
 	// dependencies injection
 	// ----- infrastructure -----
@@ -75,7 +75,7 @@ func Execute() {
 		r.Patch("reset-password", userHandler.ResetPassword)
 	})
 
-	r.Group("", []gin.HandlerFunc{middleware.Authentication(config.DefaultRealm)}, func(r *router.Router) {
+	r.Group("", []gin.HandlerFunc{middleware.Authentication(config.DefaultRealm, config.UserSession)}, func(r *router.Router) {
 		r.Group("user", nil, func(r *router.Router) {
 			r.Get("me", userHandler.GetMe)
 		})
