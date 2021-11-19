@@ -1,10 +1,9 @@
 package persistence
 
 import (
-	"github.com/pkg/errors"
 	"gorm.io/gorm"
 
-	"github.com/nimil-jp/gin-utils/xerrors"
+	"github.com/nimil-jp/gin-utils/errors"
 )
 
 func dbError(err error) error {
@@ -12,8 +11,8 @@ func dbError(err error) error {
 	case nil:
 		return nil
 	case gorm.ErrRecordNotFound:
-		return xerrors.NotFound()
+		return errors.NotFound()
 	default:
-		return errors.WithStack(err)
+		return errors.NewUnexpected(err)
 	}
 }

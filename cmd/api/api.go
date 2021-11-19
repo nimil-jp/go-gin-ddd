@@ -10,7 +10,8 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/ken109/gin-jwt"
+	jwt "github.com/ken109/gin-jwt"
+
 	"github.com/nimil-jp/gin-utils/http/middleware"
 	"github.com/nimil-jp/gin-utils/http/router"
 
@@ -75,7 +76,7 @@ func Execute() {
 		r.Patch("reset-password", userHandler.ResetPassword)
 	})
 
-	r.Group("", []gin.HandlerFunc{middleware.Authentication(config.DefaultRealm, config.UserSession)}, func(r *router.Router) {
+	r.Group("", []gin.HandlerFunc{middleware.Auth(config.DefaultRealm, config.UserSession)}, func(r *router.Router) {
 		r.Group("user", nil, func(r *router.Router) {
 			r.Get("me", userHandler.GetMe)
 		})

@@ -4,10 +4,9 @@ import (
 	"net/http"
 
 	jwt "github.com/ken109/gin-jwt"
-	"github.com/pkg/errors"
 
 	"github.com/nimil-jp/gin-utils/context"
-	"github.com/nimil-jp/gin-utils/xerrors"
+	"github.com/nimil-jp/gin-utils/errors"
 
 	"go-gin-ddd/config"
 	"go-gin-ddd/domain/entity"
@@ -77,7 +76,7 @@ func (u user) ResetPasswordRequest(
 	user, err := u.userRepo.GetByEmail(ctx, req.Email)
 	if err != nil {
 		switch v := err.(type) {
-		case *xerrors.Expected:
+		case *errors.Expected:
 			if !v.ChangeStatus(http.StatusNotFound, http.StatusOK) {
 				return nil, err
 			}
@@ -150,7 +149,7 @@ func (u user) Login(ctx context.Context, req *request.UserLogin) (*response.User
 			"user_id": user.ID,
 		})
 		if err != nil {
-			return nil, errors.WithStack(err)
+			return nil, errors.NewUnexpected(err)
 		}
 		return &res, nil
 	}
@@ -166,7 +165,7 @@ func (u user) RefreshToken(refreshToken string) (*response.UserLogin, error) {
 
 	ok, res.Token, res.RefreshToken, err = jwt.RefreshToken(config.DefaultRealm, refreshToken)
 	if err != nil {
-		return nil, errors.WithStack(err)
+		return nil, errors.NewUnexpected(err)
 	}
 
 	if !ok {
