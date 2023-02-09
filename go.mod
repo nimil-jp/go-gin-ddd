@@ -5,7 +5,7 @@ go 1.17
 require (
 	cloud.google.com/go/storage v1.18.0
 	github.com/gin-contrib/sessions v0.0.4
-	github.com/gin-gonic/gin v1.7.4
+	github.com/gin-gonic/gin v1.7.7
 	github.com/google/uuid v1.3.0
 	github.com/joho/godotenv v1.3.0
 	github.com/kelseyhightower/envconfig v1.4.0
